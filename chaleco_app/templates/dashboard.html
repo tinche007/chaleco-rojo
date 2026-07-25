@@ -1,0 +1,410 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard - Chaleco Rojo{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        border: 1px solid #eaeaea;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+    .stat-card .numero {
+        font-size: 2.5rem;
+        font-weight: 800;
+        display: block;
+        color: #080707;
+    }
+    .stat-card .label {
+        font-size: 0.85rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+    .stat-card .icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+        display: block;
+    }
+    .stat-card.primary .numero { color: #de2a26; }
+    .stat-card.success .numero { color: #0f5132; }
+    .stat-card.warning .numero { color: #f77f00; }
+    .stat-card.info .numero { color: #0d6efd; }
+    .stat-card.danger .numero { color: #842029; }
+    
+    .chart-container {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        border: 1px solid #eaeaea;
+    }
+    .chart-container h5 {
+        font-weight: 700;
+        color: #080707;
+        margin-bottom: 16px;
+    }
+    
+    .top-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #f1f3f5;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-radius: 4px;
+        padding: 8px 12px;
+    }
+    .top-item:hover {
+        background-color: #fef8f8;
+        border-left: 3px solid #de2a26;
+        padding-left: 14px;
+    }
+    .top-item:last-child {
+        border-bottom: none;
+    }
+    .top-item .rank {
+        background: #de2a26;
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 24px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        margin-right: 12px;
+        flex-shrink: 0;
+    }
+    .top-item .name {
+        flex: 1;
+        font-weight: 500;
+    }
+    .top-item .count {
+        font-weight: 700;
+        color: #de2a26;
+    }
+    .top-item .arrow {
+        color: #de2a26;
+        font-size: 0.7rem;
+        margin-left: 8px;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+    .top-item:hover .arrow {
+        opacity: 1;
+    }
+    
+    .badge-estado {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    .badge-estado.apto { background: #d1e7dd; color: #0f5132; }
+    .badge-estado.observaciones { background: #fff3cd; color: #856404; }
+    .badge-estado.no-apto { background: #f8d7da; color: #842029; }
+    .badge-estado.en-progreso { background: #e2e3e5; color: #41464b; }
+    
+    .click-hint {
+        font-size: 0.75rem;
+        color: #adb5bd;
+        text-align: center;
+        margin-top: 8px;
+    }
+    .click-hint i {
+        color: #de2a26;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Título -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold">
+                <i class="fas fa-chart-pie text-danger me-2"></i>Panel de Control
+            </h1>
+            <p class="text-muted">Resumen general de Chaleco Rojo</p>
+        </div>
+        <span class="badge bg-secondary">{{ total_auditorias }} auditorías totales</span>
+    </div>
+
+    <!-- KPIs -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-6">
+            <div class="stat-card primary">
+                <span class="icon">📊</span>
+                <span class="numero">{{ total_auditorias }}</span>
+                <span class="label">Auditorías</span>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card info">
+                <span class="icon">📋</span>
+                <span class="numero">{{ total_informes }}</span>
+                <span class="label">Informes</span>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card success">
+                <span class="icon">🏢</span>
+                <span class="numero">{{ total_clientes }}</span>
+                <span class="label">Clientes Activos</span>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card warning">
+                <span class="icon">⚠️</span>
+                <span class="numero">{{ total_hallazgos }}</span>
+                <span class="label">Hallazgos Totales</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPIs secundarios -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-6">
+            <div class="stat-card danger">
+                <span class="icon">🔴</span>
+                <span class="numero">{{ hallazgos_abiertos }}</span>
+                <span class="label">Hallazgos Abiertos</span>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card success">
+                <span class="icon">✅</span>
+                <span class="numero">{{ hallazgos_cerrados }}</span>
+                <span class="label">Hallazgos Cerrados</span>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card info">
+                <span class="icon">⚡</span>
+                <span class="numero">{{ express_count }}</span>
+                <span class="label">Auditorías Express</span>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card primary">
+                <span class="icon">📋</span>
+                <span class="numero">{{ completa_count }}</span>
+                <span class="label">Auditorías Completas</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="row g-3 mb-4">
+        <!-- Gráfico de barras: Auditorías por mes -->
+        <div class="col-md-8">
+            <div class="chart-container">
+                <h5><i class="fas fa-chart-bar me-2 text-danger"></i>Auditorías por Mes</h5>
+                <canvas id="auditoriasChart" height="200"></canvas>
+            </div>
+        </div>
+        <!-- Resultados de auditorías -->
+        <div class="col-md-4">
+            <div class="chart-container">
+                <h5><i class="fas fa-chart-pie me-2 text-danger"></i>Resultados</h5>
+                <canvas id="resultadosChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tablas y listas clickeables -->
+    <div class="row g-3">
+        <!-- Top 5 Clientes -->
+        <div class="col-md-6">
+            <div class="chart-container">
+                <h5><i class="fas fa-trophy me-2 text-warning"></i>Top 5 Clientes</h5>
+                {% if top_clientes %}
+                    {% for cliente in top_clientes %}
+                        <div class="top-item" onclick="window.location.href='{% url 'detalle_cliente' cliente.cliente__id %}'">
+                            <div style="display: flex; align-items: center;">
+                                <span class="rank">{{ forloop.counter }}</span>
+                                <span class="name">{{ cliente.cliente__nombre_fantasia }}</span>
+                            </div>
+                            <span class="count">{{ cliente.total }} auditorías <span class="arrow">→</span></span>
+                        </div>
+                    {% endfor %}
+                    <div class="click-hint">
+                        <i class="fas fa-hand-pointer"></i> Click en un cliente para ver su ficha
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center py-3">Sin datos disponibles</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Hallazgos por sector (CLICKEABLE) -->
+        <div class="col-md-6">
+            <div class="chart-container">
+                <h5><i class="fas fa-location-dot me-2 text-danger"></i>Hallazgos por Sector</h5>
+                {% if hallazgos_por_sector %}
+                    {% for sector in hallazgos_por_sector %}
+                        <div class="top-item" onclick="window.location.href='{% url 'historial_informes' %}?sector={{ sector.sector_planta|urlencode }}'">
+                            <span class="name">
+                                <i class="fas fa-arrow-right me-2 text-danger" style="font-size: 0.7rem;"></i>
+                                {{ sector.sector_planta|default:"Sin sector" }}
+                            </span>
+                            <span class="count">{{ sector.total }} <span class="arrow">→</span></span>
+                        </div>
+                    {% endfor %}
+                    <div class="click-hint">
+                        <i class="fas fa-hand-pointer"></i> Click en un sector para ver los informes relacionados
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center py-3">Sin datos disponibles</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Últimos hallazgos -->
+    <div class="row g-3 mt-2">
+        <div class="col-12">
+            <div class="chart-container">
+                <h5><i class="fas fa-clock me-2 text-danger"></i>Últimos Hallazgos Registrados</h5>
+                {% if ultimos_hallazgos %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Cliente</th>
+                                    <th>Sector</th>
+                                    <th>Descripción</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for hallazgo in ultimos_hallazgos %}
+                                    <tr>
+                                        <td>{{ hallazgo.informe.fecha_visita|date:"d/m/Y" }}</td>
+                                        <td>
+                                            {% if hallazgo.informe.cliente %}
+                                                {{ hallazgo.informe.cliente.nombre_fantasia }}
+                                            {% else %}
+                                                {{ hallazgo.informe.establecimiento_ocasional }}
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ hallazgo.sector_planta }}</td>
+                                        <td>{{ hallazgo.descripcion_desvio|truncatechars:40 }}</td>
+                                        <td>
+                                            <span class="badge {% if hallazgo.estado == 'Abierto' %}bg-danger{% elif hallazgo.estado == 'Cerrado' %}bg-success{% else %}bg-warning{% endif %}">
+                                                {{ hallazgo.estado }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center py-3">No hay hallazgos registrados</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Resumen de auditorías -->
+    <div class="row g-3 mt-2">
+        <div class="col-12">
+            <div class="chart-container">
+                <h5><i class="fas fa-clipboard-list me-2 text-danger"></i>Resumen de Auditorías</h5>
+                <div class="row g-2">
+                    <div class="col-md-3 col-6 text-center">
+                        <span class="badge-estado apto">🟢 APTO: {{ apto_count }}</span>
+                    </div>
+                    <div class="col-md-3 col-6 text-center">
+                        <span class="badge-estado observaciones">🟡 CON OBS.: {{ obs_count }}</span>
+                    </div>
+                    <div class="col-md-3 col-6 text-center">
+                        <span class="badge-estado no-apto">🔴 NO APTO: {{ no_apto_count }}</span>
+                    </div>
+                    <div class="col-md-3 col-6 text-center">
+                        <span class="badge-estado en-progreso">⏳ En progreso: {{ en_progreso_count }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gráfico de auditorías por mes
+    const ctx1 = document.getElementById('auditoriasChart').getContext('2d');
+    new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: {{ meses|safe }},
+            datasets: [{
+                label: 'Auditorías',
+                data: {{ cantidades|safe }},
+                backgroundColor: '#de2a26',
+                borderRadius: 4,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    });
+
+    // Gráfico de resultados
+    const ctx2 = document.getElementById('resultadosChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: ['APTO', 'CON OBSERVACIONES', 'NO APTO', 'EN PROGRESO'],
+            datasets: [{
+                data: [{{ apto_count }}, {{ obs_count }}, {{ no_apto_count }}, {{ en_progreso_count }}],
+                backgroundColor: ['#0f5132', '#856404', '#842029', '#6c757d'],
+                borderWidth: 0,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 12,
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

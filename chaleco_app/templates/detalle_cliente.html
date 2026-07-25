@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Detalle de Empresa - Chaleco Rojo{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       ESTILOS EXCLUSIVOS DE DETALLE_CLIENTE
+       (Mantiene exactamente tu diseño original)
+       ============================================ */
+    
+    .header-detalle {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 600px;
+        margin: 0 auto 20px auto;
+        border-bottom: 2px solid #1a446c;
+        padding-bottom: 10px;
+    }
+    
+    .header-detalle h1 {
+        color: #1a446c;
+        font-size: 22px;
+        margin: 0;
+    }
+    
+    .btn-volver {
+        background-color: #1a446c;
+        color: white;
+        text-decoration: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        transition: background-color 0.2s;
+    }
+    
+    .btn-volver:hover {
+        background-color: #112d4a;
+        color: white;
+    }
+    
+    .container-detalle {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .ficha-card {
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border-top: 6px solid #1a446c;
+        margin-bottom: 20px;
+    }
+    
+    .ficha-card.inactiva {
+        border-top: 6px solid #6c757d;
+    }
+    
+    .campo {
+        margin-bottom: 15px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 8px;
+    }
+    
+    .campo:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .label {
+        font-size: 13px;
+        color: #777;
+        text-transform: uppercase;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 2px;
+    }
+    
+    .valor {
+        font-size: 16px;
+        color: #111;
+    }
+    
+    .badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        margin-top: 5px;
+    }
+    
+    .badge.activo {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    
+    .badge.inactivo {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    
+    /* --- ESTILOS PARA LA TABLA DE VISITAS --- */
+    .visitas-card {
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border-top: 6px solid #b32121;
+    }
+    
+    .visitas-card h3 {
+        color: #b32121;
+        margin-top: 0;
+        margin-bottom: 15px;
+        font-size: 18px;
+    }
+    
+    .tabla-visitas {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+    
+    .tabla-visitas th {
+        background-color: #f4f6f9;
+        color: #1a446c;
+        text-align: left;
+        padding: 10px;
+        font-weight: bold;
+        border-bottom: 2px solid #eee;
+    }
+    
+    .tabla-visitas td {
+        padding: 12px 10px;
+        border-bottom: 1px solid #eee;
+        vertical-align: middle;
+    }
+    
+    .tabla-visitas tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .btn-pdf {
+        background-color: #b32121;
+        color: white;
+        text-decoration: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        display: inline-block;
+        transition: background-color 0.2s;
+    }
+    
+    .btn-pdf:hover {
+        background-color: #8c1a1a;
+        color: white;
+    }
+    
+    .sin-visitas {
+        color: #666;
+        font-style: italic;
+        margin: 0;
+        font-size: 14px;
+    }
+    
+    @media (max-width: 480px) {
+        .header-detalle {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+        }
+        .header-detalle .btn-volver {
+            text-align: center;
+        }
+        .tabla-visitas {
+            font-size: 12px;
+        }
+        .tabla-visitas th,
+        .tabla-visitas td {
+            padding: 8px 6px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ============================================ -->
+<!-- CONTENIDO DE DETALLE_CLIENTE -->
+<!-- ============================================ -->
+
+<div class="header-detalle">
+    <h1>🔍 Ficha de la Empresa</h1>
+    <a href="{% url 'lista_clientes' %}" class="btn-volver">← Volver</a>
+</div>
+
+<div class="container-detalle">
+    <div class="ficha-card {% if not cliente.activo %}inactiva{% endif %}">
+        
+        <div class="campo">
+            <span class="label">Estado de la Empresa</span>
+            {% if cliente.activo %}
+                <span class="badge activo">⚡ ACTIVA (EN ALTA)</span>
+            {% else %}
+                <span class="badge inactivo">📁 INACTIVA (DADA DE BAJA)</span>
+            {% endif %}
+        </div>
+
+        <div class="campo">
+            <span class="label">Nombre de Fantasía / Obra</span>
+            <span class="valor" style="font-weight: bold; color: #1a446c; font-size: 18px;">
+                {{ cliente.nombre_fantasia }}
+            </span>
+        </div>
+
+        <div class="campo">
+            <span class="label">Razón Social</span>
+            <span class="valor">{{ cliente.razon_social|default:"-" }}</span>
+        </div>
+
+        <div class="campo">
+            <span class="label">CUIT</span>
+            <span class="valor">{{ cliente.cuit|default:"-" }}</span>
+        </div>
+
+        <div class="campo">
+            <span class="label">Dirección</span>
+            <span class="valor">{{ cliente.direccion|default:"-" }}</span>
+        </div>
+
+        <div class="campo">
+            <span class="label">Provincia</span>
+            <span class="valor">{{ cliente.provincia|default:"-" }}</span>
+        </div>
+
+    </div>
+
+    <div class="visitas-card">
+        <h3>📋 Visitas y Reportes Designados</h3>
+        
+        {% if visitas %}
+            <table class="tabla-visitas">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Informe</th>
+                        <th style="text-align: right;">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for visita in visitas %}
+                        <tr>
+                            <td style="font-weight: bold; color: #1a446c;">
+                                {{ visita.fecha_visita|date:"d/m/Y" }}
+                            </td>
+                            <td style="color: #555;">
+                                Informe #{{ visita.id }}
+                            </td>
+                            <td style="text-align: right;">
+                                <a href="{% url 'exportar_pdf' visita.id %}" class="btn-pdf">
+                                    📄 PDF
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="sin-visitas">Esta empresa no registra ninguna visita técnica asignada en el sistema.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

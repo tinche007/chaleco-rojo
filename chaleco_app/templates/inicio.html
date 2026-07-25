@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Inicio - Chaleco Rojo{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/inicio.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- ============================================ -->
+<!-- CONTENIDO DE LA PÁGINA DE INICIO -->
+<!-- ============================================ -->
+
+<!-- Header con el logo y perfil -->
+<div class="header">
+    <h1>
+        <span class="negro">Chaleco</span> <span class="rojo">Rojo</span>
+    </h1>
+    <a href="#" class="profile-btn" title="Chaleco Rojo">CR</a>
+</div>
+
+<!-- Eslogan -->
+<div class="slogan">
+    <strong>Seguridad</strong> que protege, <strong>gestión</strong> que transforma
+</div>
+
+<div class="container">
+    <div class="grid-menu">
+        <a href="{% url 'crear_informe' %}" class="menu-card">
+            <div class="card-icon-wrapper">
+                <div class="card-icon">📝</div>
+            </div>
+            <div class="card-title">Nuevo Informe</div>
+        </a>
+        <a href="{% url 'historial_informes' %}" class="menu-card">
+            <div class="card-icon-wrapper">
+                <div class="card-icon">🗂️</div>
+            </div>
+            <div class="card-title">Historial de Visitas</div>
+        </a>
+        <a href="{% url 'lista_clientes' %}" class="menu-card">
+            <div class="card-icon-wrapper">
+                <div class="card-icon">🏢</div>
+            </div>
+            <div class="card-title">Mis Clientes</div>
+        </a>
+        <a href="{% url 'lista_auditorias' %}" class="menu-card">
+            <div class="card-icon-wrapper">
+                <div class="card-icon">📊</div>
+            </div>
+            <div class="card-title">Auditorías</div>
+        </a>
+    </div>
+</div>
+
+<!-- ASISTENTE CHAT FLOTANTE -->
+<div id="ai-chat-window">
+    <div id="ai-chat-header">
+        <span>🤖 Asistente Chaleco Rojo</span>
+        <button id="close-chat-btn">✕</button>
+    </div>
+    <div id="ai-messages-box">
+        <div class="message-bot">
+            ¡Hola! Soy tu asistente de IA. ¿En qué te puedo ayudar hoy con los informes o checklists?
+        </div>
+    </div>
+    <div id="ai-chat-input-area">
+        <input type="text" id="ai-user-input" placeholder="Preguntame algo..." autocomplete="off">
+        <button id="ai-send-btn">➤</button>
+    </div>
+</div>
+
+<button id="ai-chat-btn">🤖</button>
+
+<!-- SCRIPT DEL ASISTENTE IA -->
+<script>
+    const chatBtn = document.getElementById('ai-chat-btn');
+    const chatWindow = document.getElementById('ai-chat-window');
+    const closeBtn = document.getElementById('close-chat-btn');
+    const sendBtn = document.getElementById('ai-send-btn');
+    const userInput = document.getElementById('ai-user-input');
+    const messagesBox = document.getElementById('ai-messages-box');
+    const menuAsistenteBtn = document.getElementById('menu-asistente-ia');
+
+    function abrirChat() {
+        chatWindow.style.display = 'flex';
+        userInput.focus();
+    }
+
+    chatBtn.addEventListener('click', () => {
+        chatWindow.style.display = (chatWindow.style.display === 'none' || chatWindow.style.display === '') ? 'flex' : 'none';
+    });
+
+    if (menuAsistenteBtn) {
+        menuAsistenteBtn.addEventListener('click', abrirChat);
+    }
+
+    closeBtn.addEventListener('click', () => {
+        chatWindow.style.display = 'none';
+    });
+
+    function appendMessage(text, isUser) {
+        const msg = document.createElement('div');
+        msg.style.padding = '10px 14px';
+        msg.style.borderRadius = '12px';
+        msg.style.maxWidth = '85%';
+        msg.style.fontSize = '0.9rem';
+        msg.style.lineHeight = '1.5';
+
+        if (isUser) {
+            msg.className = 'message-user';
+            msg.innerText = text;
+        } else {
+            msg.className = 'message-bot';
+            msg.innerHTML = marked.parse(text);
+        }
+        messagesBox.appendChild(msg);
+        messagesBox.scrollTop = messagesBox.scrollHeight;
+    }
+
+    async function enviarMensaje() {
+        const texto = userInput.value.trim();
+        if (!texto) return;
+
+        appendMessage(texto, true);
+        userInput.value = '';
+
+        const tempLoading = document.createElement('div');
+        tempLoading.style.color = '#777';
+        tempLoading.style.fontSize = '0.8rem';
+        tempLoading.style.fontStyle = 'italic';
+        tempLoading.innerText = 'Pensando...';
+        messagesBox.appendChild(tempLoading);
+        messagesBox.scrollTop = messagesBox.scrollHeight;
+
+        try {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const response = await fetch("{% url 'asistente_ia' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken
+                },
+                body: JSON.stringify({ mensaje: texto })
+            });
+
+            const data = await response.json();
+            messagesBox.removeChild(tempLoading);
+
+            if (data.respuesta) {
+                appendMessage(data.respuesta, false);
+            } else {
+                appendMessage("Hubo un problema al procesar la respuesta.", false);
+            }
+        } catch (error) {
+            if (messagesBox.contains(tempLoading)) messagesBox.removeChild(tempLoading);
+            appendMessage("Error de conexión con el servidor.", false);
+        }
+    }
+
+    sendBtn.addEventListener('click', enviarMensaje);
+    userInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') enviarMensaje();
+    });
+</script>
+
+<!-- Agregamos marked.js para el chat -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<!-- CSRF Token para el chat -->
+{% csrf_token %}
+
+{% endblock %}

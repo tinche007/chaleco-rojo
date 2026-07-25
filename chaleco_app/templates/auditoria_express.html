@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Auditoría Express - {{ cliente.nombre_fantasia }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .express-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .pregunta-item {
+        background: white;
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin-bottom: 12px;
+        border: 1px solid #e9ecef;
+        transition: all 0.2s;
+    }
+    .pregunta-item:hover {
+        border-color: #de2a26;
+        box-shadow: 0 2px 8px rgba(222,42,38,0.06);
+    }
+    .pregunta-numero {
+        display: inline-block;
+        background: #de2a26;
+        color: white;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 28px;
+        font-size: 12px;
+        font-weight: 700;
+        margin-right: 12px;
+        flex-shrink: 0;
+    }
+    .btn-opcion {
+        padding: 6px 18px;
+        border-radius: 6px;
+        border: 2px solid #e9ecef;
+        background: white;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-opcion:hover {
+        border-color: #adb5bd;
+    }
+    .btn-opcion.si.active {
+        background: #d1e7dd;
+        border-color: #0f5132;
+        color: #0f5132;
+    }
+    .btn-opcion.no.active {
+        background: #f8d7da;
+        border-color: #842029;
+        color: #842029;
+    }
+    .btn-opcion.na.active {
+        background: #e2e3e5;
+        border-color: #41464b;
+        color: #41464b;
+    }
+    .resultado-badge {
+        font-size: 1.2rem;
+        padding: 8px 24px;
+        border-radius: 30px;
+        font-weight: 700;
+    }
+    .resultado-badge.apto { background: #d1e7dd; color: #0f5132; }
+    .resultado-badge.observaciones { background: #fff3cd; color: #856404; }
+    .resultado-badge.no-apto { background: #f8d7da; color: #842029; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="express-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold">⚡ Auditoría Express</h1>
+            <p class="text-muted">Chequeo rápido de seguridad en 5 minutos</p>
+        </div>
+        <div>
+            <span class="badge bg-secondary">{{ cliente.nombre_fantasia }}</span>
+            <!-- 🔥 BOTÓN VER RESULTADOS AGREGADO -->
+            <a href="{% url 'resultado_auditoria_express' cliente.id %}" class="btn btn-sm btn-info ms-2">
+                <i class="fas fa-chart-bar"></i> Ver Resultados
+            </a>
+            <a href="{% url 'lista_auditorias' %}" class="btn btn-sm btn-outline-secondary ms-2">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <form method="POST" id="expressForm">
+        {% csrf_token %}
+
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            Respondé las 10 preguntas. <strong>3 o más "NO"</strong> = Auditoría NO APTA.
+        </div>
+
+        {% for pregunta in preguntas %}
+            <div class="pregunta-item">
+                <div class="d-flex align-items-center mb-2">
+                    <span class="pregunta-numero">{{ forloop.counter }}</span>
+                    <span class="fw-semibold">{{ pregunta }}</span>
+                </div>
+                <div class="d-flex gap-2">
+                    {% with valor=respuestas|slice:forloop.counter0|first %}
+                        <label class="btn-opcion si {% if valor == 'SI' %}active{% endif %}" data-pregunta="{{ forloop.counter0 }}" data-valor="SI">
+                            <input type="radio" name="preg_{{ forloop.counter0 }}" value="SI" {% if valor == 'SI' %}checked{% endif %} hidden required>
+                            ✅ SÍ
+                        </label>
+                        <label class="btn-opcion no {% if valor == 'NO' %}active{% endif %}" data-pregunta="{{ forloop.counter0 }}" data-valor="NO">
+                            <input type="radio" name="preg_{{ forloop.counter0 }}" value="NO" {% if valor == 'NO' %}checked{% endif %} hidden required>
+                            ❌ NO
+                        </label>
+                        <label class="btn-opcion na {% if valor == 'N/A' or not valor %}active{% endif %}" data-pregunta="{{ forloop.counter0 }}" data-valor="N/A">
+                            <input type="radio" name="preg_{{ forloop.counter0 }}" value="N/A" {% if valor == 'N/A' or not valor %}checked{% endif %} hidden required>
+                            ➖ N/A
+                        </label>
+                    {% endwith %}
+                </div>
+            </div>
+        {% endfor %}
+
+        <div class="mb-3">
+            <label class="fw-semibold">Observaciones adicionales:</label>
+            <textarea name="observaciones" class="form-control" rows="3" placeholder="Comentarios extra...">{{ observaciones_guardadas }}</textarea>
+        </div>
+
+        <div class="d-flex gap-3">
+            <button type="submit" class="btn btn-chaleco-primary btn-lg flex-grow-1">
+                <i class="fas fa-save"></i> Guardar Auditoría Express
+            </button>
+        </div>
+    </form>
+
+    <!-- Resultado en vivo -->
+    <div class="mt-4 p-4 bg-white rounded-3 border" id="resultadoPreview" style="display: none;">
+        <h5 class="fw-bold">📊 Resultado Preliminar</h5>
+        <div id="resultadoBadge"></div>
+        <div id="resumenRespuestas" class="mt-2"></div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.btn-opcion').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const radio = this.querySelector('input[type="radio"]');
+            const parent = this.closest('.pregunta-item');
+            
+            parent.querySelectorAll('.btn-opcion').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            radio.checked = true;
+            
+            actualizarResultado();
+        });
+    });
+
+    function actualizarResultado() {
+        const radios = document.querySelectorAll('input[type="radio"]:checked');
+        const total = document.querySelectorAll('.pregunta-item').length;
+        const respondidas = radios.length;
+        
+        if (respondidas === total) {
+            const noCount = document.querySelectorAll('input[type="radio"]:checked[value="NO"]').length;
+            const preview = document.getElementById('resultadoPreview');
+            const badge = document.getElementById('resultadoBadge');
+            const resumen = document.getElementById('resumenRespuestas');
+            
+            preview.style.display = 'block';
+            
+            let clase, texto;
+            if (noCount === 0) {
+                clase = 'apto';
+                texto = '🟢 APTO - Sin observaciones';
+            } else if (noCount <= 3) {
+                clase = 'observaciones';
+                texto = `🟡 CON OBSERVACIONES - ${noCount} incumplimientos`;
+            } else {
+                clase = 'no-apto';
+                texto = `🔴 NO APTO - ${noCount} incumplimientos`;
+            }
+            
+            badge.innerHTML = `<span class="resultado-badge ${clase}">${texto}</span>`;
+            resumen.innerHTML = `<small class="text-muted">${total - noCount} SÍ · ${noCount} NO · ${total - respondidas} N/A</small>`;
+        }
+    }
+</script>
+{% endblock %}

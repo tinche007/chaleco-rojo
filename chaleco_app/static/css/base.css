@@ -1,0 +1,245 @@
+/* ============================================
+   BASE.CSS - Estilos prácticos de Chaleco Rojo
+   ============================================ */
+
+:root {
+    --color-white: #ffffff;
+    --color-black: #080707;
+    --color-red-primary: #de2a26;
+    --color-red-dark: #c62828;
+    --color-gray-light: #f4f6f9;
+    --color-gray: #6c757d;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --radius: 10px;
+    --transition: all 0.2s ease;
+}
+
+/* Reset */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--color-gray-light);
+    color: var(--color-black);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    line-height: 1.5;
+}
+
+/* ============================================
+   HEADER - Simple pero con identidad
+   ============================================ */
+.navbar-chaleco {
+    background: var(--color-black);
+    padding: 0.6rem 1.5rem;
+    border-bottom: 3px solid var(--color-red-primary);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+}
+
+.navbar-chaleco .navbar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.navbar-chaleco .navbar-brand {
+    color: white;
+    font-weight: 700;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.navbar-chaleco .navbar-brand .logo-icon {
+    background: var(--color-red-primary);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: white;
+}
+
+.navbar-chaleco .navbar-brand .logo-text span {
+    color: var(--color-red-primary);
+}
+
+.navbar-chaleco .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+}
+
+.navbar-chaleco .nav-link {
+    color: rgba(255,255,255,0.8);
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.navbar-chaleco .nav-link:hover {
+    color: white;
+    background: rgba(222, 42, 38, 0.15);
+}
+
+.navbar-chaleco .nav-link.active {
+    color: white;
+    background: var(--color-red-primary);
+}
+
+.navbar-chaleco .nav-link i {
+    margin-right: 6px;
+    width: 16px;
+    text-align: center;
+}
+
+.navbar-chaleco .navbar-toggler {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 6px;
+    padding: 6px 12px;
+    color: white;
+    cursor: pointer;
+    display: none;
+}
+
+/* ============================================
+   CONTENEDOR
+   ============================================ */
+.main-container {
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 20px;
+    width: 100%;
+}
+
+/* ============================================
+   TARJETAS
+   ============================================ */
+.card-chaleco {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid #e9ecef;
+    transition: var(--transition);
+}
+
+.card-chaleco:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+/* ============================================
+   BOTONES - Sencillos pero con estilo
+   ============================================ */
+.btn-chaleco {
+    display: inline-block;
+    padding: 8px 22px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.btn-chaleco-primary {
+    background: var(--color-red-primary);
+    color: white;
+}
+
+.btn-chaleco-primary:hover {
+    background: var(--color-red-dark);
+    transform: translateY(-2px);
+    color: white;
+}
+
+.btn-chaleco-secondary {
+    background: var(--color-gray);
+    color: white;
+}
+
+.btn-chaleco-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    color: white;
+}
+
+.btn-chaleco-outline {
+    background: transparent;
+    color: var(--color-red-primary);
+    border: 2px solid var(--color-red-primary);
+}
+
+.btn-chaleco-outline:hover {
+    background: var(--color-red-primary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.footer-chaleco {
+    background: var(--color-black);
+    color: rgba(255,255,255,0.6);
+    padding: 20px 0;
+    margin-top: auto;
+    text-align: center;
+    font-size: 0.85rem;
+    border-top: 3px solid var(--color-red-primary);
+    width: 100%;
+}
+
+.footer-chaleco strong {
+    color: var(--color-red-primary);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+    .navbar-chaleco .navbar-toggler {
+        display: block;
+    }
+    
+    .navbar-chaleco .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        padding: 8px 0;
+    }
+    
+    .navbar-chaleco .nav-links.open {
+        display: flex;
+    }
+    
+    .navbar-chaleco .nav-link {
+        width: 100%;
+        padding: 0.5rem 0.8rem;
+    }
+    
+    .main-container {
+        padding: 16px 12px;
+    }
+}

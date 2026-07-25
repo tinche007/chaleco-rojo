@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 700px;">
+    <div class="card shadow-sm border-0 p-4" style="border-radius: 12px; background-color: #fcfcfc;">
+        <h3 class="mb-2 text-center fw-bold" style="color: #333;">
+            <i class="fas fa-clipboard-check text-danger me-2"></i>Auditorías
+        </h3>
+        <p class="text-muted text-center small mb-4">
+            Seleccioná una empresa y elegí el tipo de auditoría
+        </p>
+
+        <!-- Menú Desplegable -->
+        <div class="mb-4">
+            <label for="select-cliente" class="form-label fw-bold text-dark">Empresas Registradas</label>
+            <select id="select-cliente" class="form-select form-select-lg" style="border-radius: 8px; border-color: #ced4da;">
+                <option value="" disabled selected>-- Elegí una empresa --</option>
+                {% for cli in clientes %}
+                    <option value="{{ cli.id }}">{{ cli.nombre_fantasia }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Botones Dinámicos -->
+        <div class="row g-3">
+            <div class="col-md-6">
+                <button id="btn-completa" class="btn btn-lg text-white w-100 py-3" style="background-color: #8F1D1D; border-radius: 8px; opacity: 0.5;" disabled>
+                    <i class="fas fa-clipboard-list me-2"></i> Auditoría Completa
+                    <small class="d-block text-white-50" style="font-size: 0.7rem;">61 preguntas · 20-30 min</small>
+                </button>
+            </div>
+            <div class="col-md-6">
+                <button id="btn-express" class="btn btn-lg text-white w-100 py-3" style="background-color: #f77f00; border-radius: 8px; opacity: 0.5;" disabled>
+                    <i class="fas fa-bolt me-2"></i> Auditoría Express
+                    <small class="d-block text-white-50" style="font-size: 0.7rem;">10 preguntas · 5 min</small>
+                </button>
+            </div>
+        </div>
+
+        <!-- Separador -->
+        <hr class="my-4">
+
+        <!-- Auditorías Realizadas (historial) -->
+        <h5 class="fw-bold mb-3">
+            <i class="fas fa-history me-2"></i>Auditorías Realizadas
+        </h5>
+
+        {% if auditorias %}
+            <div class="list-group">
+                {% for aud in auditorias %}
+                    <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" style="border-radius: 8px; border-left: 4px solid 
+                        {% if aud.resultado == 'apto' %}#0f5132
+                        {% elif aud.resultado == 'observaciones' %}#856404
+                        {% elif aud.resultado == 'no_apto' %}#842029
+                        {% else %}#6c757d{% endif %};">
+                        <div>
+                            <strong>{{ aud.cliente.nombre_fantasia }}</strong>
+                            <span class="badge bg-secondary ms-2">
+                                {% if aud.tipo == 'express' %}
+                                    ⚡ Express
+                                {% else %}
+                                    📋 Completa
+                                {% endif %}
+                            </span>
+                            <br>
+                            <small class="text-muted">{{ aud.fecha_creacion|date:"d/m/Y H:i" }}</small>
+                            {% if aud.realizado_por %}
+                                <small class="text-muted"> · {{ aud.realizado_por.get_full_name|default:aud.realizado_por.username }}</small>
+                            {% endif %}
+                            {% if aud.respuestas %}
+                                <br>
+                                <small class="text-muted">{{ aud.total_no }} NO de {{ aud.total_preguntas }}</small>
+                            {% endif %}
+                        </div>
+                        <div>
+                            {% if aud.resultado and aud.resultado != 'en_progreso' %}
+                                <span class="badge 
+                                    {% if aud.resultado == 'apto' %}bg-success
+                                    {% elif aud.resultado == 'observaciones' %}bg-warning text-dark
+                                    {% elif aud.resultado == 'no_apto' %}bg-danger
+                                    {% else %}bg-secondary{% endif %}">
+                                    {% if aud.resultado == 'apto' %}🟢 APTO
+                                    {% elif aud.resultado == 'observaciones' %}🟡 CON OBSERVACIONES
+                                    {% elif aud.resultado == 'no_apto' %}🔴 NO APTO
+                                    {% else %}{{ aud.resultado }}{% endif %}
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary">⏳ En progreso</span>
+                            {% endif %}
+                            
+                            <!-- 🔥 Botón de edición según el tipo -->
+                            {% if aud.tipo == 'express' %}
+                                <a href="{% url 'auditoria_express' aud.cliente.id %}" class="btn btn-sm btn-outline-warning ms-1" title="Editar Auditoría Express">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'realizar_auditoria' aud.cliente.id %}" class="btn btn-sm btn-outline-secondary ms-1" title="Editar Auditoría Completa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center text-muted py-3">
+                <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                No hay auditorías realizadas todavía.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    const selectCliente = document.getElementById('select-cliente');
+    const btnCompleta = document.getElementById('btn-completa');
+    const btnExpress = document.getElementById('btn-express');
+
+    selectCliente.addEventListener('change', function() {
+        const clienteId = this.value;
+        if (clienteId) {
+            btnCompleta.disabled = false;
+            btnCompleta.style.opacity = "1";
+            btnExpress.disabled = false;
+            btnExpress.style.opacity = "1";
+            
+            btnCompleta.onclick = function() {
+                window.location.href = `/auditorias/${clienteId}/`;
+            };
+            btnExpress.onclick = function() {
+                window.location.href = `/auditorias/${clienteId}/express/`;
+            };
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Legajo Técnico - {{ informe.id }}</title>
+    <style>
+        /* Configuraciones de página exclusivas para xhtml2pdf */
+        @page {
+            size: a4 portrait;
+            @frame header_frame {
+                -pdf-frame-content: page-header;
+                left: 40pt; right: 40pt; top: 25pt; height: 80pt;
+            }
+            @frame content_frame {
+                left: 40pt; right: 40pt; top: 115pt; bottom: 60pt;
+            }
+            @frame footer_frame {
+                -pdf-frame-content: page-footer;
+                left: 40pt; right: 40pt; bottom: 30pt; height: 20pt;
+            }
+        }
+
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            color: #070707;
+            font-size: 10pt;
+            line-height: 1.5;
+            background-color: #FEFEFE;
+        }
+
+        /* Encabezado */
+        #page-header {
+            border-bottom: 2px solid #8F1D1D;
+            padding-bottom: 5px;
+        }
+        .header-table {
+            width: 100%;
+        }
+        .header-logo-container {
+            width: 160px;
+            vertical-align: middle;
+        }
+        .header-logo-img {
+            width: 140px; 
+            height: auto;
+            max-height: 55px;
+        }
+        .header-title {
+            text-align: right;
+            font-size: 10pt;
+            color: #070707;
+            text-transform: uppercase;
+            font-weight: bold;
+            vertical-align: middle;
+        }
+
+        /* Pie de página */
+        #page-footer {
+            border-top: 1px solid #070707;
+            padding-top: 5px;
+            font-size: 8pt;
+            color: #666666;
+        }
+
+        /* Bloques de contenido */
+        .title-container {
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #070707;
+            font-size: 18pt;
+            margin: 0 0 5px 0;
+        }
+        .doc-id {
+            font-size: 10pt;
+            color: #8F1D1D;
+            font-weight: bold;
+        }
+
+        /* Tabla de metadatos */
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            background-color: #F5F5F5;
+        }
+        .meta-table td {
+            padding: 8px 10px;
+            border: 1px solid #070707;
+        }
+        .label {
+            font-weight: bold;
+            color: #8F1D1D;
+            width: 25%;
+        }
+
+        /* Secciones */
+        .section-title {
+            font-size: 12pt;
+            color: #8F1D1D;
+            border-bottom: 1px solid #A82424;
+            padding-bottom: 3px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+            page-break-after: avoid;
+        }
+        .observaciones-box {
+            background-color: #F5F5F5;
+            border-left: 3px solid #8F1D1D;
+            padding: 10px;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+
+        /* Tarjeta de Hallazgos */
+        .hallazgo-card {
+            margin-bottom: 20px;
+            background-color: #FEFEFE;
+            border: 1px solid #070707;
+            padding: 15px;
+            page-break-inside: avoid;
+        }
+        .hallazgo-header {
+            font-size: 11pt;
+            font-weight: bold;
+            color: #FEFEFE;
+            background-color: #8F1D1D;
+            padding: 6px 10px;
+            margin-bottom: 12px;
+        }
+
+        .hallazgo-descripcion {
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+        .item-title {
+            font-weight: bold;
+            color: #A82424;
+            font-size: 9pt;
+            text-transform: uppercase;
+            display: inline;
+            margin-right: 5px;
+        }
+
+        .item-text {
+            margin-bottom: 12px;
+            font-size: 10pt;
+            display: block;
+        }
+
+        .medida-correctiva {
+            background-color: #F5F5F5;
+            border: 1px solid #8F1D1D;
+            padding: 8px;
+            font-size: 9.5pt;
+            margin-top: 8px;
+            margin-bottom: 10px;
+        }
+
+        /* Solución definitiva: Tabla con un solo borde para la foto */
+        .galeria-tabla {
+            width: 100%;
+            margin-top: 10px;
+            border: 1px solid #070707;
+            border-collapse: collapse;
+            background-color: #FEFEFE;
+        }
+        
+        .galeria-celda {
+            padding: 12px;
+        }
+        
+        .block-title {
+            font-weight: bold;
+            color: #A82424;
+            font-size: 9pt;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .foto-bloque {
+            display: inline-block;
+            margin-right: 12px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .foto-evidencia {
+            width: 230px;
+            height: 230px;
+            object-fit: cover;
+            border: 1px solid #070707;
+        }
+
+        .sin-foto-text {
+            font-size: 9.5pt;
+            color: #070707;
+            padding-top: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="page-header">
+        <table class="header-table">
+            <tr>
+                <td class="header-logo-container">
+                    <img src="C:\Users\Tinchelix\Desktop\CR13-07\images\crnuevo.png" class="header-logo-img" alt="CHALECO ROJO">
+                </td>
+                <td class="header-title">Higiene y Seguridad Laboral</td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="page-footer">
+        <table style="width: 100%;">
+            <tr>
+                <td>Chaleco Rojo - Legajo Digital Automatizado - Generado por Sistema</td>
+                <td style="text-align: right;">Pág. <pdf:pagenumber/> de <pdf:pagecount/></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="title-container">
+        <h1>Informe Técnico de Visita</h1>
+        <div class="doc-id">Ref ID: #00{{ informe.id }}</div>
+    </div>
+
+    <table class="meta-table">
+        <tr>
+            <td class="label">Establecimiento:</td>
+            <td>
+                {% if informe.cliente %}
+                    {{ informe.cliente.nombre_fantasia }} ({{ informe.cliente.razon_social }})
+                {% else %}
+                    {{ informe.establecimiento_ocasional|default:"No especificado" }}
+                {% endif %}
+            </td>
+            <td class="label">Fecha y Hora:</td>
+            <td>{{ informe.fecha_visita|date:"d/m/Y H:i" }}</td>
+        </tr>
+        <tr>
+            <td class="label">Organización:</td>
+            <td>{{ informe.organizacion.nombre|default:"Chaleco Rojo Corp" }}</td>
+            <td class="label">Inspector / Auditor:</td>
+            <td>
+                {% if informe.inspector %}
+                    {{ informe.inspector.get_full_name|default:informe.inspector.username }}
+                {% else %}
+                    Técnico de Campo
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+
+    <div class="section-title">Resumen General de la Inspección</div>
+    <div class="observaciones-box">
+        {{ informe.observaciones_generales|default:"No se cargaron comentarios o aclaraciones generales para esta visita técnica." }}
+    </div>
+
+    <div class="section-title">Hallazgos y Riesgos Registrados</div>
+
+    {% for hallazgo in informe.hallazgos.all %}
+        <div class="hallazgo-card">
+            <div class="hallazgo-header">
+                Sector / Planta: {{ hallazgo.sector_planta|default:"No especificado" }}
+            </div>
+            
+            <div class="hallazgo-descripcion">
+                <div class="item-text">
+                    <span class="item-title">Descripción del Desvío:</span>
+                    {{ hallazgo.descripcion_desvio|default:"Sin descripción" }}
+                </div>
+                
+                {% if hallazgo.medida_correctiva_sugerida %}
+                    <div class="medida-correctiva">
+                        <span class="item-title" style="color: #8F1D1D;">Medida Correctiva Sugerida:</span>
+                        {{ hallazgo.medida_correctiva_sugerida }}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Tabla contenedora para evitar bordes divididos -->
+            <table class="galeria-tabla">
+                <tr>
+                    <td class="galeria-celda">
+                        <div class="block-title">Evidencia Fotográfica:</div>
+                        
+                        {% if hallazgo.foto_evidencia %}
+                            <div class="foto-bloque">
+                                <img src="{{ hallazgo.foto_evidencia.url }}" class="foto-evidencia">
+                            </div>
+                        {% else %}
+                            <div class="sin-foto-text">[ Sin registro fotográfico ]</div>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    {% empty %}
+        <div style="text-align: center; padding: 20px; color: #070707; border: 1px dashed #070707; background-color: #F5F5F5;">
+            No se cargaron hallazgos específicos en esta inspección.
+        </div>
+    {% endfor %}
+
+</body>
+</html>

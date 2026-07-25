@@ -1,0 +1,450 @@
+/* ============================================
+   INICIO.CSS - Con amor para Chaleco Rojo
+   ============================================ */
+
+/* ----- Fondo con degradado sutil ----- */
+body {
+    background: linear-gradient(135deg, #f5f0eb 0%, #ffffff 50%, #fdf5f5 100%);
+    min-height: 100vh;
+}
+
+/* ----- Header con estilo ----- */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 600px;
+    margin: 0 auto 25px auto;
+    padding-bottom: 12px;
+    position: relative;
+}
+
+.header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #de2a26, #080707, #de2a26);
+    border-radius: 2px;
+}
+
+.header h1 {
+    font-size: 28px;
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.header h1 .rojo {
+    color: #de2a26;
+}
+
+.header h1 .negro {
+    color: #080707;
+}
+
+.profile-btn {
+    background: linear-gradient(135deg, #de2a26, #c62828);
+    color: white;
+    text-decoration: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba(222, 42, 38, 0.35);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.profile-btn:hover {
+    transform: scale(1.1) rotate(-5deg);
+    box-shadow: 0 6px 20px rgba(222, 42, 38, 0.45);
+}
+
+/* ----- Eslogan ----- */
+.slogan {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 30px auto;
+    color: #6c757d;
+    font-size: 0.95rem;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+}
+
+.slogan strong {
+    color: #de2a26;
+    font-weight: 600;
+}
+
+/* ----- Contenedor del menú ----- */
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ----- Grid de tarjetas ----- */
+.grid-menu {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+/* ----- Cada tarjeta con amor ----- */
+.menu-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px 16px;
+    text-align: center;
+    text-decoration: none;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(222, 42, 38, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efecto de brillo en la esquina */
+.menu-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(222, 42, 38, 0.04) 0%, transparent 70%);
+    transition: all 0.5s ease;
+    pointer-events: none;
+}
+
+.menu-card:hover::before {
+    top: -30%;
+    right: -30%;
+    width: 120%;
+    height: 120%;
+}
+
+.menu-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgba(222, 42, 38, 0.12);
+    border-color: rgba(222, 42, 38, 0.2);
+}
+
+/* Ícono con círculo de fondo */
+.card-icon-wrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+}
+
+/* Colores de fondo para cada ícono */
+.menu-card:nth-child(1) .card-icon-wrapper { background: #fde8e8; }
+.menu-card:nth-child(2) .card-icon-wrapper { background: #e8f0fe; }
+.menu-card:nth-child(3) .card-icon-wrapper { background: #e8f5e9; }
+.menu-card:nth-child(4) .card-icon-wrapper { background: #fff3e0; }
+.menu-card:nth-child(5) .card-icon-wrapper { background: #fce4ec; }
+.menu-card:nth-child(6) .card-icon-wrapper { background: #e8eaf6; }
+
+.menu-card:hover .card-icon-wrapper {
+    transform: scale(1.1) rotate(-5deg);
+}
+
+.card-icon {
+    font-size: 28px;
+    line-height: 1;
+}
+
+.card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #080707;
+    transition: color 0.3s ease;
+}
+
+.menu-card:hover .card-title {
+    color: #de2a26;
+}
+
+/* Badge de "Nuevo" en Auditorías */
+.menu-card .badge-nuevo {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #de2a26;
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================
+   ASISTENTE CHAT FLOTANTE - ARREGLADO
+   ============================================ */
+
+#ai-chat-window {
+    position: fixed;
+    bottom: 85px;
+    right: 20px;
+    width: 350px;
+    height: 450px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 1000;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+#ai-chat-header {
+    background: linear-gradient(135deg, #080707, #1a1a1a);
+    color: white;
+    padding: 14px 18px;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #de2a26;
+    flex-shrink: 0;
+}
+
+#ai-chat-header span {
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
+}
+
+#close-chat-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+#close-chat-btn:hover {
+    color: #ffffff;
+    transform: rotate(90deg);
+}
+
+#ai-messages-box {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #f8f9fa;
+}
+
+#ai-messages-box strong {
+    color: #080707;
+    font-weight: 700;
+}
+
+#ai-messages-box .message-bot {
+    background-color: #e9ecef;
+    color: #212529;
+    padding: 10px 14px;
+    border-radius: 12px 12px 12px 4px;
+    max-width: 85%;
+    align-self: flex-start;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+#ai-messages-box .message-user {
+    background: linear-gradient(135deg, #de2a26, #c62828);
+    color: #ffffff;
+    padding: 10px 14px;
+    border-radius: 12px 12px 4px 12px;
+    max-width: 85%;
+    align-self: flex-end;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    box-shadow: 0 2px 8px rgba(222, 42, 38, 0.25);
+}
+
+#ai-chat-input-area {
+    border-top: 1px solid #e9ecef;
+    padding: 12px 16px;
+    display: flex;
+    gap: 10px;
+    background-color: #ffffff;
+    flex-shrink: 0;
+}
+
+#ai-user-input {
+    flex: 1;
+    border: 2px solid #e9ecef;
+    border-radius: 24px;
+    padding: 10px 18px;
+    outline: none;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    background-color: #f8f9fa;
+}
+
+#ai-user-input:focus {
+    border-color: #de2a26;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(222, 42, 38, 0.1);
+}
+
+#ai-user-input::placeholder {
+    color: #adb5bd;
+}
+
+#ai-send-btn {
+    background: linear-gradient(135deg, #de2a26, #c62828);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(222, 42, 38, 0.3);
+}
+
+#ai-send-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(222, 42, 38, 0.4);
+}
+
+#ai-send-btn:active {
+    transform: scale(0.95);
+}
+
+#ai-chat-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #de2a26, #c62828);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 26px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(222, 42, 38, 0.35);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#ai-chat-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 24px rgba(222, 42, 38, 0.45);
+}
+
+#ai-chat-btn:active {
+    transform: scale(0.95);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 480px) {
+    .grid-menu {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .menu-card {
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 16px 18px;
+        border-radius: 12px;
+    }
+    
+    .card-icon-wrapper {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+        margin-bottom: 0;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+    
+    .card-icon {
+        font-size: 20px;
+    }
+    
+    .card-title {
+        font-size: 14px;
+    }
+    
+    .header h1 {
+        font-size: 22px;
+    }
+    
+    .slogan {
+        font-size: 0.85rem;
+        margin-bottom: 20px;
+    }
+    
+    .menu-card .badge-nuevo {
+        display: none;
+    }
+    
+    #ai-chat-window {
+        width: calc(100% - 24px);
+        right: 12px;
+        bottom: 76px;
+        height: 65vh;
+        border-radius: 12px;
+    }
+    
+    #ai-chat-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 22px;
+        bottom: 16px;
+        right: 16px;
+    }
+}
+
+@media (max-width: 380px) {
+    .header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .header::after {
+        width: 100%;
+    }
+}

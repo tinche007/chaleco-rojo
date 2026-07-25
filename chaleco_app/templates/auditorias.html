@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Auditoría de Campo - Chaleco Rojo{% endblock %}
+
+{% block extra_css %}
+<style>
+    .audit-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 0 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .audit-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+        border: 1px solid #eaeaea;
+        overflow: hidden;
+    }
+    .audit-card-header {
+        background-color: #212529;
+        color: #ffffff;
+        padding: 15px 20px;
+        font-size: 1.15rem;
+        font-weight: 600;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .badge-preguntas {
+        background-color: rgba(255,255,255,0.2);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 400;
+    }
+    .question-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 1px solid #f5f5f5;
+        transition: background-color 0.2s;
+    }
+    .question-row:last-child {
+        border-bottom: none;
+    }
+    .question-row:hover {
+        background-color: #fafafa;
+    }
+    .question-text {
+        font-size: 1rem;
+        color: #333333;
+        font-weight: 500;
+        max-width: 65%;
+        line-height: 1.4;
+    }
+    .question-number {
+        display: inline-block;
+        background-color: #e9ecef;
+        color: #495057;
+        font-weight: 700;
+        font-size: 0.75rem;
+        padding: 2px 10px;
+        border-radius: 20px;
+        margin-right: 12px;
+    }
+    .audit-options {
+        display: flex;
+        gap: 8px;
+    }
+    .btn-audit {
+        display: inline-block;
+        padding: 8px 18px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 2px solid #ddd;
+        background-color: #fff;
+        color: #666;
+        text-align: center;
+        min-width: 60px;
+        transition: all 0.2s ease;
+        user-select: none;
+    }
+    .btn-audit:hover {
+        background-color: #f8f9fa;
+        border-color: #bbb;
+    }
+    .btn-check-si:checked + .btn-audit {
+        background-color: #d1e7dd;
+        border-color: #0f5132;
+        color: #0f5132;
+    }
+    .btn-check-no:checked + .btn-audit {
+        background-color: #f8d7da;
+        border-color: #842029;
+        color: #842029;
+    }
+    .btn-check-na:checked + .btn-audit {
+        background-color: #e2e3e5;
+        border-color: #41464b;
+        color: #41464b;
+    }
+    .submit-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding-bottom: 40px;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    .btn-save {
+        background-color: #8F1D1D;
+        color: white;
+        padding: 14px 40px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1.05rem;
+        border: none;
+        transition: all 0.2s;
+    }
+    .btn-save:hover {
+        background-color: #721616;
+        color: white;
+    }
+    .btn-volver {
+        background-color: #6c757d;
+        color: white;
+        padding: 14px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1.05rem;
+        border: none;
+        text-decoration: none;
+    }
+    .btn-volver:hover {
+        background-color: #5a6268;
+        color: white;
+    }
+    .progreso-badge {
+        background-color: #f8f9fa;
+        padding: 8px 20px;
+        border-radius: 30px;
+        font-size: 0.9rem;
+        color: #495057;
+        border: 1px solid #dee2e6;
+    }
+    @media (max-width: 768px) {
+        .question-row {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+        }
+        .question-text {
+            max-width: 100%;
+        }
+        .audit-options {
+            justify-content: flex-start;
+        }
+        .btn-audit {
+            padding: 8px 14px;
+            min-width: 50px;
+            font-size: 0.8rem;
+        }
+        .submit-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .btn-save, .btn-volver {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="audit-container">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h2 class="fw-bold text-dark m-0">
+            <i class="fas fa-clipboard-check text-primary me-2"></i>Auditoría de Campo
+        </h2>
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <span class="badge bg-secondary px-3 py-2 fs-6" style="border-radius: 6px;">
+                <i class="fas fa-building me-1"></i> {{ cliente.nombre_fantasia }}
+            </span>
+<a href="{% url 'lista_auditorias' %}" class="btn btn-outline-secondary btn-sm">
+    <i class="fas fa-arrow-left"></i> Volver
+</a>
+            <a href="{% url 'resultado_auditoria' cliente.id %}" class="btn btn-info btn-sm">
+                <i class="fas fa-chart-bar"></i> Ver Resultados
+            </a>
+        </div>
+    </div>
+
+    <div class="progreso-badge mb-3">
+        <i class="fas fa-info-circle me-2"></i>
+        Complete todas las preguntas. Las respuestas <strong>NO</strong> indican incumplimientos.
+    </div>
+
+    {% if tiene_preguntas %}
+        <form method="POST">
+            {% csrf_token %}
+
+            {% for categoria in categorias %}
+                <div class="audit-card">
+                    <div class="audit-card-header">
+                        <span><i class="fas fa-folder-open me-2"></i>{{ categoria.nombre }}</span>
+                        <span class="badge-preguntas">{{ categoria.preguntas_filtradas|length }} preguntas</span>
+                    </div>
+                    
+                    {% for pregunta in categoria.preguntas_filtradas %}
+                        <div class="question-row">
+                            <div class="question-text">
+                                <span class="question-number">{{ forloop.counter }}</span>
+                                {{ pregunta.texto }}
+                            </div>
+                            <div class="audit-options">
+                                <input type="radio" class="btn-check btn-check-si" 
+                                       name="preg_{{ pregunta.id }}" 
+                                       id="si_{{ pregunta.id }}" 
+                                       value="SI"
+                                       {% if pregunta.respuesta_guardada == 'SI' %}checked{% endif %}
+                                       required>
+                                <label class="btn-audit" for="si_{{ pregunta.id }}">SÍ</label>
+
+                                <input type="radio" class="btn-check btn-check-no" 
+                                       name="preg_{{ pregunta.id }}" 
+                                       id="no_{{ pregunta.id }}" 
+                                       value="NO"
+                                       {% if pregunta.respuesta_guardada == 'NO' %}checked{% endif %}
+                                       required>
+                                <label class="btn-audit" for="no_{{ pregunta.id }}">NO</label>
+
+                                <input type="radio" class="btn-check btn-check-na" 
+                                       name="preg_{{ pregunta.id }}" 
+                                       id="na_{{ pregunta.id }}" 
+                                       value="N/A"
+                                       {% if not pregunta.respuesta_guardada or pregunta.respuesta_guardada == 'N/A' %}checked{% endif %}
+                                       required>
+                                <label class="btn-audit" for="na_{{ pregunta.id }}">N/A</label>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <div class="submit-bar">
+                <a href="{% url 'lista_auditorias' %}" class="btn-volver">
+                    <i class="fas fa-arrow-left me-2"></i> Volver al listado
+                </a>
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-save me-2"></i> Guardar Auditoría
+                </button>
+            </div>
+        </form>
+    {% else %}
+        <div class="alert alert-warning border-0 shadow-sm" style="border-radius: 8px;">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            No hay preguntas de auditoría cargadas (o activas) en el sistema. 
+            <a href="{% url 'lista_clientes' %}" class="alert-link">Volver a clientes</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

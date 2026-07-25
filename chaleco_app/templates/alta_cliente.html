@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Alta de Empresa - Chaleco Rojo{% endblock %}
+
+{% block extra_css %}
+<style>
+    .container-alta {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border-top: 5px solid #1a446c;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-group label {
+        display: block;
+        font-weight: bold;
+        color: #1a446c;
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+    .form-control {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    .row {
+        display: flex;
+        gap: 15px;
+    }
+    .col {
+        flex: 1;
+    }
+    .btn-group {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+    }
+    .btn-guardar {
+        background-color: #bd1f1f;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .btn-guardar:hover {
+        background-color: #961818;
+    }
+    .btn-cancelar {
+        background-color: #666;
+        color: white;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+    .btn-cancelar:hover {
+        background-color: #444;
+    }
+    .alert {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+    }
+    @media (max-width: 480px) {
+        .row {
+            flex-direction: column;
+            gap: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-alta">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" autocomplete="off">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label>Nombre de Fantasía / Obra *</label>
+            <input type="text" name="nombre_fantasia" class="form-control" required placeholder="Ej: Obra Plaza España">
+        </div>
+
+        <div class="form-group">
+            <label>Razón Social</label>
+            <input type="text" name="razon_social" class="form-control" placeholder="Ej: Constructora S.A.">
+        </div>
+
+        <div class="row">
+            <div class="col form-group">
+                <label>CUIT (Solo números)</label>
+                <input type="text" name="cuit" class="form-control" maxlength="11" placeholder="Ej: 30123456789">
+            </div>
+            <div class="col form-group">
+                <label>Provincia</label>
+                <input type="text" name="provincia" class="form-control" value="Córdoba">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Dirección / Frente de Obra *</label>
+            <input type="text" name="direccion" class="form-control" required placeholder="Ej: Av. Colón 1500">
+        </div>
+
+        <div class="row">
+            <div class="col form-group">
+                <label>Teléfono de Contacto</label>
+                <input type="text" name="telefono" class="form-control" placeholder="Ej: 3513333333">
+            </div>
+            <div class="col form-group">
+                <label>Email de Contacto</label>
+                <input type="email" name="email" class="form-control" placeholder="Ej: contacto@empresa.com">
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <a href="{% url 'lista_clientes' %}" class="btn-cancelar">Cancelar</a>
+            <button type="submit" class="btn-guardar">Guardar Empresa</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

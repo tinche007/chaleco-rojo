@@ -1,0 +1,577 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Crear Informe - Chaleco Rojo{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       CREAR_INFORME - Con amor
+       ============================================ */
+    
+    .container-informe {
+        max-width: 700px;
+        margin: 0 auto;
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        border-top: 5px solid #de2a26;
+    }
+    
+    .container-informe h2 {
+        color: #080707;
+        text-align: center;
+        margin-top: 0;
+        font-weight: 800;
+        font-size: 1.6rem;
+        letter-spacing: -0.5px;
+    }
+    
+    .container-informe h2 span {
+        color: #de2a26;
+    }
+    
+    .subtitle {
+        text-align: center;
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin-top: -8px;
+        margin-bottom: 24px;
+        border-bottom: 2px solid #f1f3f5;
+        padding-bottom: 16px;
+    }
+    
+    .messages {
+        background-color: #fde8e8;
+        color: #c62828;
+        border-left: 4px solid #de2a26;
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        list-style: none;
+        font-weight: 600;
+    }
+    
+    .messages li {
+        padding: 4px 0;
+    }
+    
+    .form-group {
+        margin-bottom: 18px;
+    }
+    
+    label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #080707;
+        font-size: 0.9rem;
+    }
+    
+    label .required {
+        color: #de2a26;
+        margin-left: 2px;
+    }
+    
+    label i {
+        color: #de2a26;
+        margin-right: 8px;
+        width: 18px;
+    }
+    
+    input[type="text"], 
+    select, 
+    textarea {
+        width: 100%;
+        padding: 12px 14px;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        box-sizing: border-box;
+        font-size: 0.95rem;
+        background-color: #f8f9fa;
+        color: #080707;
+        transition: all 0.2s ease;
+        font-family: inherit;
+    }
+    
+    input[type="text"]:focus, 
+    select:focus, 
+    textarea:focus {
+        outline: none;
+        border-color: #de2a26;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 4px rgba(222, 42, 38, 0.08);
+    }
+    
+    input[type="text"]::placeholder,
+    textarea::placeholder {
+        color: #adb5bd;
+    }
+    
+    input[type="file"] {
+        width: 100%;
+        padding: 10px 12px;
+        border: 2px dashed #e9ecef;
+        border-radius: 10px;
+        box-sizing: border-box;
+        font-size: 0.9rem;
+        background-color: #f8f9fa;
+        color: #080707;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    input[type="file"]:hover {
+        border-color: #de2a26;
+        background-color: #fef8f8;
+    }
+    
+    textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+    
+    .section-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #080707;
+        background: linear-gradient(90deg, #f1f3f5, transparent);
+        padding: 8px 14px;
+        margin-top: 24px;
+        margin-bottom: 16px;
+        border-left: 4px solid #de2a26;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 0 8px 8px 0;
+    }
+    
+    .section-title i {
+        color: #de2a26;
+        font-size: 1rem;
+    }
+    
+    .section-title .badge-step {
+        background: #de2a26;
+        color: white;
+        font-size: 0.7rem;
+        padding: 2px 10px;
+        border-radius: 12px;
+        margin-left: auto;
+    }
+    
+    .btn-submit {
+        background: linear-gradient(135deg, #de2a26, #c62828);
+        color: white;
+        padding: 14px 28px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        width: 100%;
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 16px rgba(222, 42, 38, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(222, 42, 38, 0.35);
+    }
+    
+    .btn-submit:active {
+        transform: translateY(0);
+    }
+    
+    .btn-back {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-align: center;
+        background-color: #080707;
+        color: white;
+        padding: 12px 20px;
+        text-decoration: none;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-top: 10px;
+        box-sizing: border-box;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-back:hover {
+        opacity: 0.85;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .btn-back i {
+        font-size: 1rem;
+    }
+    
+    .hint {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-top: 4px;
+        padding-left: 4px;
+    }
+    
+    /* ESTILOS DE AGREGADOS DINÁMICOS */
+    .bloque-hallazgo {
+        background: #ffffff;
+        padding: 20px;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        margin-bottom: 16px;
+        position: relative;
+        transition: all 0.3s ease;
+        animation: fadeSlideIn 0.3s ease;
+    }
+    
+    .bloque-hallazgo:hover {
+        border-color: #de2a26;
+        box-shadow: 0 4px 12px rgba(222, 42, 38, 0.06);
+    }
+    
+    .bloque-hallazgo .hallazgo-number {
+        position: absolute;
+        top: -10px;
+        left: 16px;
+        background: #de2a26;
+        color: white;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 2px 12px;
+        border-radius: 10px;
+        letter-spacing: 0.5px;
+    }
+    
+    @keyframes fadeSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .btn-agregar {
+        background: transparent;
+        color: #de2a26;
+        padding: 12px 20px;
+        border: 2px dashed #de2a26;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 600;
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .btn-agregar:hover {
+        background: #fde8e8;
+        border-color: #c62828;
+        transform: translateY(-2px);
+    }
+    
+    .btn-eliminar {
+        background: transparent;
+        color: #dc3545;
+        padding: 6px 14px;
+        border: 1px solid #dc3545;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-top: 8px;
+        float: right;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-eliminar:hover {
+        background: #dc3545;
+        color: white;
+    }
+    
+    .clearfix::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+    
+    /* Contenedor estético para el cliente nuevo */
+    .ocasional-container {
+        border: 2px solid #de2a26;
+        padding: 18px;
+        border-radius: 12px;
+        background: #fef8f8;
+        margin-bottom: 16px;
+        position: relative;
+    }
+    
+    .ocasional-container::before {
+        content: '🆕 Nuevo Cliente';
+        position: absolute;
+        top: -10px;
+        left: 16px;
+        background: #de2a26;
+        color: white;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 2px 14px;
+        border-radius: 10px;
+        letter-spacing: 0.5px;
+    }
+    
+    .ocasional-container .form-group:first-of-type {
+        margin-top: 8px;
+    }
+    
+    /* Select personalizado */
+    select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236c757d' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        padding-right: 40px;
+    }
+    
+    @media (max-width: 480px) {
+        .container-informe {
+            padding: 16px;
+        }
+        
+        .bloque-hallazgo {
+            padding: 14px;
+        }
+        
+        .container-informe h2 {
+            font-size: 1.3rem;
+        }
+        
+        .btn-submit {
+            font-size: 0.95rem;
+            padding: 12px 20px;
+        }
+        
+        .ocasional-container {
+            padding: 14px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ============================================ -->
+<!-- CONTENIDO DE CREAR_INFORME -->
+<!-- ============================================ -->
+
+<div class="container-informe">
+    <h2>🛡️ <span>Nuevo</span> Legajo Técnico</h2>
+    <p class="subtitle">Registrá una visita, hallazgos y evidencias en obra</p>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li>⚠️ {{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" autocomplete="off">
+        {% csrf_token %}
+
+        <!-- PASO 1 -->
+        <div class="section-title">
+            <i class="fas fa-building"></i> Identificación del Lugar / Cliente
+            <span class="badge-step">Paso 1</span>
+        </div>
+        
+        <div class="form-group">
+            <label for="cliente">
+                <i class="fas fa-list"></i> Cliente Seleccionado:
+            </label>
+            <select name="cliente" id="cliente">
+                <option value="">-- Seleccionar Cliente Registrado --</option>
+                {% for c in clientes %}
+                    <option value="{{ c.id }}">{{ c.nombre_fantasia }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- CLIENTE OCASIONAL -->
+        <div class="ocasional-container">
+            <div class="form-group">
+                <label for="establecimiento_ocasional" style="color: #de2a26;">
+                    <i class="fas fa-plus-circle"></i> O ingresar Cliente Nuevo:
+                </label>
+                <input type="text" name="establecimiento_ocasional" id="establecimiento_ocasional" placeholder="Ej: Obra Plaza España">
+                <div class="hint">Usar solo si el cliente no está en la lista de arriba.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="cuit_ocasional">
+                    <i class="fas fa-id-card"></i> CUIT:
+                </label>
+                <input type="text" name="cuit_ocasional" id="cuit_ocasional" maxlength="11" placeholder="Ej: 30123456789">
+            </div>
+
+            <div class="form-group">
+                <label for="direccion_ocasional">
+                    <i class="fas fa-map-pin"></i> Dirección:
+                </label>
+                <input type="text" name="direccion_ocasional" id="direccion_ocasional" placeholder="Ej: Av. Colón 1500">
+            </div>
+        </div>
+
+        <!-- PASO 2 -->
+        <div class="section-title">
+            <i class="fas fa-file-alt"></i> Resumen Ejecutivo de la Visita
+            <span class="badge-step">Paso 2</span>
+        </div>
+        
+        <div class="form-group">
+            <label for="observaciones_generales">
+                <i class="fas fa-pen"></i> ¿Qué se hizo? Detalles generales:
+            </label>
+            <textarea name="observaciones_generales" id="observaciones_generales" rows="4" placeholder="Escribí acá el estado general, qué se inspeccionó, qué se habló con el capataz, qué cosas están bien y cuáles mal..."></textarea>
+        </div>
+
+        <!-- PASO 3 -->
+        <div class="section-title">
+            <i class="fas fa-exclamation-triangle"></i> Registro de Condiciones Inseguras / Desvíos
+            <span class="badge-step">Paso 3</span>
+        </div>
+
+        <div id="contenedor-hallazgos">
+            <div class="bloque-hallazgo">
+                <span class="hallazgo-number">#1</span>
+                
+                <div class="form-group">
+                    <label for="sector_1">
+                        <i class="fas fa-location-dot"></i> Sector / Planta:
+                    </label>
+                    <input type="text" name="sector[]" id="sector_1" placeholder="Ej: Depósito, Línea de montaje, Subsuelo" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="desvio_1">
+                        <i class="fas fa-circle-exclamation"></i> Descripción del Desvío:
+                    </label>
+                    <textarea name="desvio[]" id="desvio_1" rows="3" placeholder="Detalle técnico de la infracción o riesgo observado..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="medida_1">
+                        <i class="fas fa-lightbulb"></i> Medida Correctiva Sugerida:
+                    </label>
+                    <textarea name="medida[]" id="medida_1" rows="3" placeholder="¿Qué acción obligatoria debe tomar la empresa para resolverlo?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="foto_1">
+                        <i class="fas fa-camera"></i> Evidencia Fotográfica:
+                    </label>
+                    <input type="file" name="foto_evidencia[]" id="foto_1" accept="image/*">
+                    <div class="hint">Formato: JPG, PNG, GIF. Máx 5MB.</div>
+                </div>
+                
+                <div class="clearfix">
+                    <button type="button" class="btn-eliminar" onclick="eliminarSector(this)">
+                        <i class="fas fa-trash"></i> Eliminar este Sector
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" id="btn-agregar-sector" class="btn-agregar">
+            <i class="fas fa-plus-circle"></i> Agregar Otro Sector / Desvío
+        </button>
+
+        <button type="submit" class="btn-submit">
+            <i class="fas fa-save"></i> Guardar Registro y Generar
+        </button>
+        
+        <a href="{% url 'inicio' %}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Volver al Inicio
+        </a>
+    </form>
+</div>
+
+<script>
+    document.getElementById('btn-agregar-sector').addEventListener('click', function() {
+        const contenedor = document.getElementById('contenedor-hallazgos');
+        const total = contenedor.children.length + 1;
+        
+        const nuevoBloque = document.createElement('div');
+        nuevoBloque.className = 'bloque-hallazgo';
+        nuevoBloque.style.animation = 'fadeSlideIn 0.3s ease';
+        
+        nuevoBloque.innerHTML = `
+            <span class="hallazgo-number">#${total}</span>
+            
+            <div class="form-group">
+                <label><i class="fas fa-location-dot"></i> Sector / Planta:</label>
+                <input type="text" name="sector[]" placeholder="Ej: Depósito, Línea de montaje, Subsuelo" required>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-circle-exclamation"></i> Descripción del Desvío:</label>
+                <textarea name="desvio[]" rows="3" placeholder="Detalle técnico de la infracción o riesgo observado..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-lightbulb"></i> Medida Correctiva Sugerida:</label>
+                <textarea name="medida[]" rows="3" placeholder="¿Qué acción obligatoria debe tomar la empresa para resolverlo?"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-camera"></i> Evidencia Fotográfica:</label>
+                <input type="file" name="foto_evidencia[]" accept="image/*">
+                <div class="hint">Formato: JPG, PNG, GIF. Máx 5MB.</div>
+            </div>
+            
+            <div class="clearfix">
+                <button type="button" class="btn-eliminar" onclick="eliminarSector(this)">
+                    <i class="fas fa-trash"></i> Eliminar este Sector
+                </button>
+            </div>
+        `;
+        
+        contenedor.appendChild(nuevoBloque);
+    });
+
+    function eliminarSector(boton) {
+        const contenedor = document.getElementById('contenedor-hallazgos');
+        
+        if (contenedor.children.length > 1) {
+            boton.closest('.bloque-hallazgo').remove();
+            // Renumerar
+            contenedor.querySelectorAll('.hallazgo-number').forEach((el, index) => {
+                el.textContent = `#${index + 1}`;
+            });
+        } else {
+            alert("El legajo técnico debe contener como mínimo un desvío o sector registrado.");
+        }
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Confirmar Baja - Chaleco Rojo{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       ESTILOS EXCLUSIVOS DE CONFIRMAR_BAJA
+       (Mantiene exactamente tu diseño original)
+       ============================================ */
+    
+    .container-baja {
+        max-width: 500px;
+        margin: 50px auto;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 30px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        border-top: 5px solid #bd1f1f;
+        text-align: center;
+    }
+    
+    .container-baja h1 {
+        color: #1a446c;
+        font-size: 22px;
+        margin-top: 0;
+    }
+    
+    .container-baja p {
+        font-size: 16px;
+        line-height: 1.5;
+        color: #555;
+        margin-bottom: 25px;
+    }
+    
+    .empresa-info {
+        background-color: #f8f9fa;
+        border-left: 4px solid #1a446c;
+        padding: 12px;
+        margin: 15px 0 25px 0;
+        text-align: left;
+        border-radius: 4px;
+    }
+    
+    .empresa-info strong {
+        color: #1a446c;
+    }
+    
+    .btn-group {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+    }
+    
+    .btn-confirmar {
+        background-color: #bd1f1f;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 5px;
+        font-weight: bold;
+        font-size: 14px;
+        cursor: pointer;
+        flex: 1;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: background-color 0.2s;
+    }
+    
+    .btn-confirmar:hover {
+        background-color: #961818;
+    }
+    
+    .btn-cancelar {
+        background-color: #666;
+        color: white;
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: 5px;
+        font-weight: bold;
+        font-size: 14px;
+        text-align: center;
+        flex: 1;
+        transition: background-color 0.2s;
+    }
+    
+    .btn-cancelar:hover {
+        background-color: #444;
+        color: white;
+    }
+    
+    @media (max-width: 480px) {
+        .container-baja {
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .btn-group {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ============================================ -->
+<!-- CONTENIDO DE CONFIRMAR_BAJA -->
+<!-- ============================================ -->
+
+<div class="container-baja">
+    <h1>⚠️ Confirmar Baja de Empresa</h1>
+    
+    <p>¿Estás seguro de que deseas dar de baja esta empresa? No aparecerá en los nuevos informes, pero se mantendrá en el historial técnico.</p>
+    
+    <div class="empresa-info">
+        <strong>Nombre:</strong> {{ cliente.nombre_fantasia }}<br>
+        <strong>Razón Social:</strong> {{ cliente.razon_social|default:"-" }}<br>
+        <strong>CUIT:</strong> {{ cliente.cuit|default:"-" }}
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="btn-group">
+            <a href="{% url 'lista_clientes' %}" class="btn-cancelar">Cancelar</a>
+            <button type="submit" class="btn-confirmar">Sí, dar de baja</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

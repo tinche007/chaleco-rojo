@@ -1,0 +1,671 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Historial de Informes - Chaleco Rojo{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ============================================
+       HISTORIAL_INFORMES - Con amor
+       ============================================ */
+
+    .historial-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    /* ----- Header del historial ----- */
+    .historial-header {
+        background: linear-gradient(135deg, #080707, #1a1a1a);
+        padding: 24px 30px;
+        border-radius: 16px 16px 0 0;
+        border-bottom: 3px solid #de2a26;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .historial-header h1 {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .historial-header h1 i {
+        color: #de2a26;
+    }
+
+    .historial-header .badge-total {
+        background: rgba(222, 42, 38, 0.2);
+        color: #de2a26;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border: 1px solid rgba(222, 42, 38, 0.3);
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .header-actions .btn {
+        padding: 8px 18px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-outline-light {
+        background: transparent;
+        color: rgba(255,255,255,0.7);
+        border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .btn-outline-light:hover {
+        background: rgba(255,255,255,0.1);
+        color: white;
+    }
+
+    .btn-primary-red {
+        background: linear-gradient(135deg, #de2a26, #c62828);
+        color: white;
+        box-shadow: 0 2px 12px rgba(222, 42, 38, 0.3);
+    }
+
+    .btn-primary-red:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(222, 42, 38, 0.4);
+        color: white;
+    }
+
+    /* ----- Estadísticas rápidas ----- */
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 12px;
+        padding: 16px 20px;
+        background: white;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-item .number {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #080707;
+        display: block;
+    }
+
+    .stat-item .label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        color: #6c757d;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+
+    .stat-item .number.red {
+        color: #de2a26;
+    }
+
+    /* ----- Lista de informes ----- */
+    .informes-list {
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 0 0 16px 16px;
+    }
+
+    .informe-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border: 1px solid #e9ecef;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: fadeInUp 0.4s ease both;
+    }
+
+    .informe-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        border-color: rgba(222, 42, 38, 0.15);
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .informe-card:nth-child(1) { animation-delay: 0.05s; }
+    .informe-card:nth-child(2) { animation-delay: 0.10s; }
+    .informe-card:nth-child(3) { animation-delay: 0.15s; }
+    .informe-card:nth-child(4) { animation-delay: 0.20s; }
+    .informe-card:nth-child(5) { animation-delay: 0.25s; }
+
+    .informe-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #f1f3f5;
+    }
+
+    .informe-cliente {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .informe-cliente .icon {
+        width: 40px;
+        height: 40px;
+        background: #fde8e8;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .informe-cliente .name {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #080707;
+    }
+
+    .informe-cliente .name i {
+        color: #de2a26;
+        margin-right: 6px;
+    }
+
+    .informe-cliente .sub {
+        font-size: 0.8rem;
+        color: #6c757d;
+        display: block;
+    }
+
+    .informe-fecha {
+        text-align: right;
+        font-size: 0.85rem;
+        color: #6c757d;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .informe-fecha .badge-estado {
+        background: #e8f5e9;
+        color: #2e7d32;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .informe-fecha .badge-estado.cerrado {
+        background: #e3f2fd;
+        color: #0d47a1;
+    }
+
+    /* ----- Hallazgos ----- */
+    .hallazgos-list {
+        margin: 12px 0;
+    }
+
+    .hallazgo-item {
+        background: #f8f9fa;
+        padding: 10px 14px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        border-left: 3px solid #de2a26;
+        transition: all 0.2s ease;
+    }
+
+    .hallazgo-item:hover {
+        background: #f1f3f5;
+    }
+
+    .hallazgo-item .sector {
+        font-weight: 600;
+        color: #080707;
+        font-size: 0.85rem;
+    }
+
+    .hallazgo-item .sector i {
+        color: #de2a26;
+        margin-right: 6px;
+    }
+
+    .hallazgo-item .descripcion {
+        font-size: 0.9rem;
+        color: #495057;
+        margin-top: 2px;
+    }
+
+    .hallazgo-item .medida {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-top: 4px;
+        padding: 4px 10px;
+        background: #e9ecef;
+        border-radius: 4px;
+        display: inline-block;
+    }
+
+    .hallazgo-item .medida i {
+        color: #de2a26;
+        margin-right: 4px;
+    }
+
+    /* Foto colapsable */
+    .colapsable-foto {
+        background: transparent;
+        padding: 0;
+        border: none;
+        margin-top: 6px;
+    }
+
+    .colapsable-foto summary {
+        color: #de2a26;
+        font-weight: 600;
+        font-size: 0.8rem;
+        cursor: pointer;
+        list-style: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        background: rgba(222, 42, 38, 0.06);
+        transition: all 0.2s ease;
+    }
+
+    .colapsable-foto summary:hover {
+        background: rgba(222, 42, 38, 0.12);
+    }
+
+    .colapsable-foto summary::after {
+        content: "▼";
+        font-size: 0.6rem;
+        color: #6c757d;
+    }
+
+    .colapsable-foto[open] summary::after {
+        content: "▲";
+    }
+
+    .colapsable-foto .foto-contenedor {
+        margin-top: 8px;
+        text-align: center;
+    }
+
+    .colapsable-foto .foto-evidencia {
+        max-width: 100%;
+        max-height: 250px;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .sin-foto {
+        font-size: 0.8rem;
+        color: #adb5bd;
+        font-style: italic;
+        padding: 4px 0;
+    }
+
+    /* ----- Acciones del informe ----- */
+    .informe-acciones {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid #f1f3f5;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .informe-acciones .btn-group {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-accion {
+        padding: 6px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-accion.pdf {
+        background: #de2a26;
+        color: white;
+    }
+
+    .btn-accion.pdf:hover {
+        background: #c62828;
+        transform: translateY(-2px);
+        color: white;
+    }
+
+    .btn-accion.eliminar {
+        background: transparent;
+        color: #dc3545;
+        border: 1px solid #dc3545;
+    }
+
+    .btn-accion.eliminar:hover {
+        background: #dc3545;
+        color: white;
+    }
+
+    .btn-accion.ver {
+        background: #e9ecef;
+        color: #495057;
+    }
+
+    .btn-accion.ver:hover {
+        background: #dee2e6;
+    }
+
+    /* ----- No records ----- */
+    .no-records {
+        text-align: center;
+        padding: 40px 20px;
+        background: white;
+        border-radius: 12px;
+        border: 1px dashed #de2a26;
+    }
+
+    .no-records .icon {
+        font-size: 48px;
+        margin-bottom: 12px;
+        opacity: 0.5;
+    }
+
+    .no-records h3 {
+        color: #080707;
+        margin: 0 0 8px 0;
+    }
+
+    .no-records p {
+        color: #6c757d;
+        margin: 0;
+    }
+
+    /* ============================================
+       RESPONSIVE
+       ============================================ */
+    @media (max-width: 600px) {
+        .historial-header {
+            flex-direction: column;
+            align-items: stretch;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .historial-header h1 {
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .header-actions {
+            justify-content: center;
+        }
+
+        .stats-row {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            padding: 12px 16px;
+        }
+
+        .stat-item .number {
+            font-size: 1.2rem;
+        }
+
+        .informe-header {
+            flex-direction: column;
+        }
+
+        .informe-fecha {
+            text-align: left;
+            width: 100%;
+            justify-content: flex-start;
+        }
+
+        .informe-acciones {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .informe-acciones .btn-group {
+            justify-content: center;
+        }
+
+        .informes-list {
+            padding: 12px;
+        }
+
+        .informe-card {
+            padding: 16px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="historial-container">
+    <!-- HEADER -->
+    <div class="historial-header">
+        <div>
+            <h1>
+                <i class="fas fa-history"></i>
+                Historial de Visitas
+                <span class="badge-total">{{ informes|length }} informes</span>
+            </h1>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'inicio' %}" class="btn btn-outline-light">
+                <i class="fas fa-arrow-left"></i> Inicio
+            </a>
+            <a href="{% url 'crear_informe' %}" class="btn btn-primary-red">
+                <i class="fas fa-plus"></i> Nuevo Informe
+            </a>
+        </div>
+    </div>
+
+    <!-- ESTADÍSTICAS -->
+    <div class="stats-row">
+        <div class="stat-item">
+            <span class="number red">{{ informes|length }}</span>
+            <span class="label">Informes</span>
+        </div>
+        <div class="stat-item">
+            <span class="number">
+                {% with total=0 %}
+                    {% for inf in informes %}
+                        {% with total=total|add:inf.hallazgos.all|length %}{% endwith %}
+                    {% endfor %}
+                    {{ total }}
+                {% endwith %}
+            </span>
+            <span class="label">Hallazgos</span>
+        </div>
+        <div class="stat-item">
+            <span class="number">
+                {% with total=0 %}
+                    {% for inf in informes %}
+                        {% with total=total|add:1 %}{% endwith %}
+                    {% endfor %}
+                    {{ total }}
+                {% endwith %}
+            </span>
+            <span class="label">Visitas</span>
+        </div>
+        <div class="stat-item">
+            <span class="number">0</span>
+            <span class="label">Pendientes</span>
+        </div>
+    </div>
+
+    <!-- LISTA DE INFORMES -->
+    <div class="informes-list">
+        {% if informes %}
+            {% for inf in informes %}
+                <div class="informe-card">
+                    <!-- Encabezado -->
+                    <div class="informe-header">
+                        <div class="informe-cliente">
+                            <div class="icon">
+                                {% if inf.cliente %}
+                                    🏭
+                                {% else %}
+                                    📍
+                                {% endif %}
+                            </div>
+                            <div>
+                                <span class="name">
+                                    {% if inf.cliente %}
+                                        <i class="fas fa-building"></i> {{ inf.cliente.nombre_fantasia }}
+                                    {% else %}
+                                        <i class="fas fa-map-pin"></i> {{ inf.establecimiento_ocasional }}
+                                    {% endif %}
+                                </span>
+                                <span class="sub">
+                                    {% if inf.cliente %}
+                                        {{ inf.cliente.razon_social|default:"Sin razón social" }}
+                                    {% else %}
+                                        Cliente ocasional
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="informe-fecha">
+                            <span>{{ inf.fecha_visita|date:"d/m/Y H:i" }}</span>
+                            <span class="badge-estado">
+                                <i class="fas fa-check-circle"></i> Completado
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Hallazgos -->
+                    <div class="hallazgos-list">
+                        {% for hallazgo in inf.hallazgos.all %}
+                            <div class="hallazgo-item">
+                                <div class="sector">
+                                    <i class="fas fa-location-dot"></i> {{ hallazgo.sector_planta }}
+                                </div>
+                                <div class="descripcion">
+                                    {{ hallazgo.descripcion_desvio }}
+                                </div>
+                                {% if hallazgo.medida_correctiva_sugerida %}
+                                    <div class="medida">
+                                        <i class="fas fa-lightbulb"></i> {{ hallazgo.medida_correctiva_sugerida }}
+                                    </div>
+                                {% endif %}
+
+                                <details class="colapsable-foto">
+                                    <summary>
+                                        <i class="fas fa-camera"></i> Ver Registro Fotográfico
+                                    </summary>
+                                    {% if hallazgo.foto_evidencia %}
+                                        <div class="foto-contenedor">
+                                            <img src="{{ hallazgo.foto_evidencia.url }}" alt="Evidencia" class="foto-evidencia">
+                                        </div>
+                                    {% else %}
+                                        <div class="sin-foto">
+                                            <i class="fas fa-image"></i> Sin fotografía cargada.
+                                        </div>
+                                    {% endif %}
+                                </details>
+                            </div>
+                        {% empty %}
+                            <div style="color: #6c757d; font-size: 0.85rem; padding: 8px 0;">
+                                <i class="fas fa-info-circle"></i> Sin hallazgos registrados.
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Acciones -->
+                    <div class="informe-acciones">
+                        <div class="btn-group">
+                            <a href="{% url 'exportar_pdf' inf.id %}" class="btn-accion pdf">
+                                <i class="fas fa-file-pdf"></i> Descargar PDF
+                            </a>
+                        </div>
+                        <div class="btn-group">
+                            <form action="{% url 'eliminar_informe' inf.id %}" method="POST" onsubmit="return confirmarEliminacion(event);">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-accion eliminar">
+                                    <i class="fas fa-trash"></i> Borrar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-records">
+                <div class="icon">📭</div>
+                <h3>No hay informes registrados</h3>
+                <p>Comienza creando tu primer informe de visita.</p>
+                <a href="{% url 'crear_informe' %}" class="btn btn-primary-red" style="display: inline-block; margin-top: 16px; padding: 10px 24px; border-radius: 8px; text-decoration: none;">
+                    <i class="fas fa-plus"></i> Crear Informe
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function confirmarEliminacion(event) {
+        if (!confirm("¿Estás seguro de que deseas eliminar este informe de visita? Esta acción no se puede deshacer.")) {
+            event.preventDefault();
+            return false;
+        }
+        return true;
+    }
+</script>
+
+{% endblock %}

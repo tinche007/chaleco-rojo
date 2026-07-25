@@ -1,0 +1,11 @@
+{
+  "name": "chaleco-rojo",
+  "version": "1.0.0",
+  "description": "Sistema de Higiene y Seguridad",
+  "main": "manage.py",
+  "scripts": {
+    "start": "python manage.py runserver"
+  },
+  "author": "",
+  "license": "ISC"
+}

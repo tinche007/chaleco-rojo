@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 500px;">
+    <div class="card shadow-sm border-0 p-4" style="border-radius: 12px; border-top: 5px solid #842029;">
+        <h3 class="fw-bold text-center text-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>Eliminar Cliente
+        </h3>
+        <p class="text-center text-muted">⚠️ Esta acción es irreversible. El cliente será eliminado permanentemente.</p>
+
+        <div class="card bg-light p-3 mb-4">
+            <h5 class="fw-bold">{{ cliente.nombre_fantasia }}</h5>
+            <p class="mb-1"><strong>Razón Social:</strong> {{ cliente.razon_social|default:"-" }}</p>
+            <p class="mb-1"><strong>CUIT:</strong> {{ cliente.cuit|default:"-" }}</p>
+            <p class="mb-0"><strong>Dirección:</strong> {{ cliente.direccion|default:"-" }}</p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="d-flex gap-3">
+                <a href="{% url 'lista_clientes' %}" class="btn btn-secondary flex-grow-1">Cancelar</a>
+                <button type="submit" class="btn btn-danger flex-grow-1">
+                    <i class="fas fa-trash"></i> Sí, eliminar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

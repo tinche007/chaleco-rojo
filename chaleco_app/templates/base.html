@@ -26,21 +26,24 @@
             </button>
             
             <div class="nav-links">
+                <!-- INICIO PRIMERO -->
                 <a class="nav-link {% if request.resolver_match.url_name == 'inicio' %}active{% endif %}" href="{% url 'inicio' %}">
                     <i class="fas fa-home"></i> Inicio
-                </a>
-                <a class="nav-link {% if request.resolver_match.url_name == 'lista_clientes' %}active{% endif %}" href="{% url 'lista_clientes' %}">
-                    <i class="fas fa-building"></i> Clientes
                 </a>
                 <a class="nav-link {% if request.resolver_match.url_name == 'lista_auditorias' %}active{% endif %}" href="{% url 'lista_auditorias' %}">
                     <i class="fas fa-clipboard-check"></i> Auditorías
                 </a>
-                <a class="nav-link {% if request.resolver_match.url_name == 'historial_informes' %}active{% endif %}" href="{% url 'historial_informes' %}">
-                    <i class="fas fa-history"></i> Informes
+                <a class="nav-link {% if request.resolver_match.url_name == 'lista_clientes' %}active{% endif %}" href="{% url 'lista_clientes' %}">
+                    <i class="fas fa-building"></i> Clientes
                 </a>
-                <!-- 🔥 DASHBOARD -->
                 <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
                     <i class="fas fa-chart-pie"></i> Dashboard
+                </a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'documentacion' %}active{% endif %}" href="{% url 'documentacion' %}">
+                    <i class="fas fa-folder-open"></i> Documentación
+                </a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'historial_informes' %}active{% endif %}" href="{% url 'historial_informes' %}">
+                    <i class="fas fa-history"></i> Informes
                 </a>
                 <a class="nav-link" href="{% url 'crear_informe' %}">
                     <i class="fas fa-plus-circle"></i> Nuevo Informe

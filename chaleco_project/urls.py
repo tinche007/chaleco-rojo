@@ -21,6 +21,8 @@ from chaleco_app.views import (
     auditoria_express,
     resultado_auditoria_express,  # ✅ YA ESTÁ IMPORTADA
     dashboard_view,
+    eliminar_cliente_view,
+    documentacion_view,
 )
 
 urlpatterns = [
@@ -42,6 +44,8 @@ urlpatterns = [
     path('auditorias/<int:cliente_id>/express/', auditoria_express, name='auditoria_express'),
     path('auditorias/<int:cliente_id>/express/resultado/', resultado_auditoria_express, name='resultado_auditoria_express'),  # ✅ SIN views.
     path('dashboard/', dashboard_view, name='dashboard'),
+    path('clientes/eliminar/<int:cliente_id>/', eliminar_cliente_view, name='eliminar_cliente'),
+    path('documentacion/', documentacion_view, name='documentacion'),
 ]
 
 if settings.DEBUG:

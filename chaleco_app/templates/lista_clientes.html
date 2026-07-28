@@ -7,7 +7,6 @@
 <style>
     /* ============================================
        ESTILOS EXCLUSIVOS DE LISTA_CLIENTES
-       (Mantiene exactamente tu diseño original)
        ============================================ */
     
     .header-lista {
@@ -34,10 +33,12 @@
         border-radius: 5px;
         font-size: 14px;
         font-weight: bold;
+        transition: background-color 0.2s;
     }
     
     .btn-volver:hover {
         background-color: #112d4a;
+        color: white;
     }
     
     .container-lista {
@@ -83,12 +84,19 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
     }
     
     .cliente-card.baja {
         border-left: 5px solid #6c757d;
         background: #fdfefe;
         opacity: 0.8;
+    }
+    
+    .cliente-info {
+        flex: 1;
+        min-width: 150px;
     }
     
     .cliente-info h3 {
@@ -115,19 +123,54 @@
         color: #666;
     }
     
-    .btn-baja {
-        background-color: #bd1f1f;
-        color: white;
-        text-decoration: none;
+    /* ============================================
+       BOTONES DE ACCIÓN
+       ============================================ */
+    .btn-accion {
         padding: 6px 12px;
         border-radius: 4px;
         font-size: 13px;
         font-weight: bold;
-        transition: background-color 0.2s;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-block;
+        margin: 2px;
+    }
+    
+    .btn-accion:hover {
+        transform: translateY(-1px);
+        color: white;
+    }
+    
+    .btn-baja {
+        background-color: #bd1f1f;
+        color: white;
     }
     
     .btn-baja:hover {
         background-color: #961818;
+        color: white;
+    }
+    
+    .btn-reactivar {
+        background-color: #0f5132;
+        color: white;
+    }
+    
+    .btn-reactivar:hover {
+        background-color: #0a3822;
+        color: white;
+    }
+    
+    .btn-eliminar {
+        background-color: #842029;
+        color: white;
+    }
+    
+    .btn-eliminar:hover {
+        background-color: #5c1a1e;
         color: white;
     }
     
@@ -138,6 +181,7 @@
         border-radius: 4px;
         font-size: 12px;
         font-weight: bold;
+        display: inline-block;
     }
     
     .no-clientes {
@@ -156,14 +200,24 @@
         border-top: 1px solid #ccc;
     }
     
+    .acciones-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        align-items: center;
+    }
+    
     @media (max-width: 480px) {
         .cliente-card {
             flex-direction: column;
             align-items: stretch;
-            gap: 10px;
         }
-        .cliente-card .btn-baja {
+        .acciones-group {
+            justify-content: center;
+        }
+        .btn-accion {
             text-align: center;
+            flex: 1;
         }
     }
 </style>
@@ -182,6 +236,9 @@
 <div class="container-lista">
     <a href="{% url 'alta_cliente' %}" class="btn-alta">+ Agregar Nueva Empresa / Obra</a>
 
+    <!-- ========================================== -->
+    <!-- EMPRESAS ACTIVAS -->
+    <!-- ========================================== -->
     <h2 class="seccion-titulo">🏢 Empresas en Alta</h2>
     
     {% if empresas_activas %}
@@ -196,8 +253,19 @@
                     <p><strong>Dirección:</strong> {{ cliente.direccion }} ({{ cliente.provincia|default:"-" }})</p>
                     {% if cliente.cuit %}<p><strong>CUIT:</strong> {{ cliente.cuit }}</p>{% endif %}
                 </div>
-                <div>
-                    <a href="{% url 'baja_cliente' cliente.id %}" class="btn-baja" onclick="return confirm('¿Seguro que querés dar de baja esta empresa?');">Dar de Baja</a>
+                <div class="acciones-group">
+                    <!-- Dar de Baja (lógica) -->
+                    <a href="{% url 'baja_cliente' cliente.id %}" 
+                       class="btn-accion btn-baja" 
+                       onclick="return confirm('¿Seguro que querés dar de baja esta empresa?');">
+                        ⬇️ Dar de Baja
+                    </a>
+                    <!-- Eliminar (físico) -->
+                    <a href="{% url 'eliminar_cliente' cliente.id %}" 
+                       class="btn-accion btn-eliminar" 
+                       onclick="return confirm('⚠️ ¿Estás seguro? Esta acción ELIMINARÁ el cliente de la base de datos. No se puede deshacer.');">
+                        🗑️ Eliminar
+                    </a>
                 </div>
             </div>
         {% endfor %}
@@ -209,6 +277,9 @@
 
     <hr>
 
+    <!-- ========================================== -->
+    <!-- EMPRESAS INACTIVAS (BAJA LÓGICA) -->
+    <!-- ========================================== -->
     <h2 class="seccion-titulo" style="color: #6c757d;">📁 Historial de Bajas</h2>
 
     {% if empresas_bajas %}
@@ -223,8 +294,20 @@
                     <p><strong>Dirección:</strong> {{ cliente.direccion }} ({{ cliente.provincia|default:"-" }})</p>
                     {% if cliente.cuit %}<p><strong>CUIT:</strong> {{ cliente.cuit }}</p>{% endif %}
                 </div>
-                <div>
-                    <span class="badge-baja">Inactiva</span>
+                <div class="acciones-group">
+                    <span class="badge-baja">📁 Inactiva</span>
+                    <!-- Reactivar -->
+                    <a href="{% url 'reactivar_cliente' cliente.id %}" 
+                       class="btn-accion btn-reactivar" 
+                       onclick="return confirm('¿Querés reactivar esta empresa?');">
+                        🔄 Reactivar
+                    </a>
+                    <!-- Eliminar (físico) -->
+                    <a href="{% url 'eliminar_cliente' cliente.id %}" 
+                       class="btn-accion btn-eliminar" 
+                       onclick="return confirm('⚠️ ¿Estás seguro? Esta acción ELIMINARÁ el cliente de la base de datos. No se puede deshacer.');">
+                        🗑️ Eliminar
+                    </a>
                 </div>
             </div>
         {% endfor %}

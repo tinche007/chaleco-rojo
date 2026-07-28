@@ -490,7 +490,7 @@ def lista_auditorias(request):
 
 def realizar_auditoria(request, cliente_id):
     """
-    Realiza una auditoría para un cliente específico usando las preguntas de la BD.
+    Realiza una auditoría para un cliente específico. SIEMPRE empieza desde cero (N/A).
     """
     # 1. Obtener el cliente
     try:
@@ -503,17 +503,21 @@ def realizar_auditoria(request, cliente_id):
     else:
         cliente = get_object_or_404(ClienteEmpresa, id=cliente_id)
 
-    # 2. Obtener o crear la auditoría
-    auditoria, created = Auditoria.objects.get_or_create(
+    # 🔥 SIEMPRE crear una auditoría NUEVA (no buscar una existente)
+    # Eliminar auditoría anterior si existe (opcional)
+    Auditoria.objects.filter(cliente=cliente, tipo='completa').delete()
+    
+    # Crear una nueva auditoría
+    auditoria = Auditoria.objects.create(
         cliente=cliente,
-        tipo='completa',  # 🔥 ASEGURAR QUE SEA COMPLETA
-        defaults={'realizado_por': request.user if request.user.is_authenticated else None}
+        tipo='completa',
+        realizado_por=request.user if request.user.is_authenticated else None,
+        resultado='en_progreso'
     )
 
-    # 3. Procesar POST (guardar respuestas)
+    # 2. Procesar POST (guardar respuestas)
     if request.method == 'POST':
         with transaction.atomic():
-            # Contador de NO
             no_count = 0
             total_preguntas = 0
             
@@ -523,19 +527,17 @@ def realizar_auditoria(request, cliente_id):
                     total_preguntas += 1
                     try:
                         pregunta = PreguntaAuditoria.objects.get(id=pregunta_id)
-                        respuesta, _ = RespuestaAuditoria.objects.get_or_create(
+                        RespuestaAuditoria.objects.create(
                             auditoria=auditoria,
                             pregunta=pregunta,
-                            defaults={'valor': 'N/A'}
+                            valor=value
                         )
-                        respuesta.valor = value
-                        respuesta.save()
                         if value == 'NO':
                             no_count += 1
                     except PreguntaAuditoria.DoesNotExist:
                         pass
 
-            # 🔥 CALCULAR RESULTADO
+            # Calcular resultado
             if total_preguntas > 0:
                 if no_count == 0:
                     auditoria.resultado = 'apto'
@@ -548,20 +550,18 @@ def realizar_auditoria(request, cliente_id):
         messages.success(request, f"Auditoría de {cliente.nombre_fantasia} guardada correctamente.")
         return redirect('resultado_auditoria', cliente_id=cliente.id)
 
-    # 4. Obtener preguntas agrupadas por categoría para el GET
+    # 3. Obtener preguntas agrupadas por categoría para el GET
     categorias = []
     for cat in CategoriaPregunta.objects.all().order_by('orden'):
         preguntas = cat.preguntas.filter(activo=True).order_by('orden')
         if preguntas.exists():
-            respuestas = RespuestaAuditoria.objects.filter(auditoria=auditoria, pregunta__in=preguntas)
-            respuestas_dict = {r.pregunta_id: r.valor for r in respuestas}
-            
+            # 🔥 No cargar respuestas guardadas (siempre N/A)
             preguntas_con_respuesta = []
             for p in preguntas:
                 preguntas_con_respuesta.append({
                     'id': p.id,
                     'texto': p.texto,
-                    'respuesta_guardada': respuestas_dict.get(p.id, None)
+                    'respuesta_guardada': None  # 🔥 Siempre N/A
                 })
             
             categorias.append({
@@ -659,7 +659,7 @@ def test_view(request):
 # ==========================================
 
 def auditoria_express(request, cliente_id):
-    """Auditoría Express de 10 preguntas - Carga respuestas guardadas"""
+    """Auditoría Express de 10 preguntas - SIEMPRE empieza desde cero"""
     try:
         mi_organizacion = request.user.perfilusuario.organizacion
     except (AttributeError, PerfilUsuario.DoesNotExist):
@@ -683,33 +683,18 @@ def auditoria_express(request, cliente_id):
         '¿Los residuos peligrosos están correctamente almacenados y señalizados?',
     ]
     
-    # 🔥 BUSCAR SI YA EXISTE UNA AUDITORÍA EXPRESS PARA ESTE CLIENTE
-    auditoria_existente = Auditoria.objects.filter(
-        cliente=cliente,
-        tipo='express'
-    ).order_by('-fecha_creacion').first()
+    # 🔥 ELIMINAR auditoría anterior si existe
+    Auditoria.objects.filter(cliente=cliente, tipo='express').delete()
     
-    # 🔥 CARGAR RESPUESTAS GUARDADAS
-    respuestas_guardadas = {}
-    if auditoria_existente:
-        for respuesta in auditoria_existente.respuestas.all():
-            respuestas_guardadas[respuesta.pregunta_texto] = respuesta.valor
+    # Crear una nueva auditoría Express
+    auditoria = Auditoria.objects.create(
+        cliente=cliente,
+        tipo='express',
+        realizado_por=request.user if request.user.is_authenticated else None,
+        observaciones=request.POST.get('observaciones', '')
+    )
     
     if request.method == 'POST':
-        # Si existe, la actualizamos, si no, la creamos
-        if auditoria_existente:
-            auditoria = auditoria_existente
-            # Eliminar respuestas viejas
-            auditoria.respuestas.all().delete()
-        else:
-            auditoria = Auditoria.objects.create(
-                cliente=cliente,
-                tipo='express',
-                realizado_por=request.user if request.user.is_authenticated else None,
-            )
-        
-        auditoria.observaciones = request.POST.get('observaciones', '')
-        
         # Guardar respuestas
         no_count = 0
         for i, pregunta_texto in enumerate(preguntas):
@@ -731,23 +716,14 @@ def auditoria_express(request, cliente_id):
             auditoria.resultado = 'no_apto'
         auditoria.save()
         
-        messages.success(request, f"✅ Auditoría Express actualizada para {cliente.nombre_fantasia}")
+        messages.success(request, f"✅ Auditoría Express completada para {cliente.nombre_fantasia}")
         return redirect('lista_auditorias')
-    
-    # Preparar respuestas para el template (en el mismo orden que las preguntas)
-    respuestas = []
-    if auditoria_existente:
-        for pregunta in preguntas:
-            respuesta = auditoria_existente.respuestas.filter(pregunta_texto=pregunta).first()
-            respuestas.append(respuesta.valor if respuesta else 'N/A')
-    else:
-        respuestas = ['N/A'] * len(preguntas)
     
     context = {
         'cliente': cliente,
         'preguntas': preguntas,
-        'respuestas': respuestas,  # Lista en el mismo orden
-        'observaciones_guardadas': auditoria_existente.observaciones if auditoria_existente else '',
+        'respuestas': ['N/A'] * len(preguntas),  # 🔥 Siempre N/A
+        'observaciones_guardadas': '',
     }
     return render(request, 'auditoria_express.html', context)
 
@@ -959,3 +935,95 @@ def historial_informes_view(request):
         messages.info(request, f"📌 Mostrando informes con hallazgos en: {sector_filtro}")
 
     return render(request, 'historial_informes.html', {'informes': informes})
+
+
+def eliminar_cliente_view(request, cliente_id):
+    """
+    Elimina físicamente un cliente de la base de datos.
+    """
+    if request.user.is_authenticated:
+        try:
+            mi_organizacion = request.user.perfilusuario.organizacion
+        except PerfilUsuario.DoesNotExist:
+            mi_organizacion = Organizacion.objects.first()
+    else:
+        mi_organizacion = Organizacion.objects.first()
+
+    if mi_organizacion:
+        cliente = get_object_or_404(ClienteEmpresa, id=cliente_id, organizacion=mi_organizacion)
+    else:
+        cliente = get_object_or_404(ClienteEmpresa, id=cliente_id)
+
+    if request.method == 'POST':
+        nombre = cliente.nombre_fantasia
+        cliente.delete()
+        messages.success(request, f"✅ Cliente '{nombre}' eliminado permanentemente.")
+        return redirect('lista_clientes')
+
+    return render(request, 'confirmar_eliminar_cliente.html', {'cliente': cliente})
+
+def documentacion_view(request):
+    """Módulo de gestión documental - Lee archivos automáticamente con tamaño"""
+    try:
+        mi_organizacion = request.user.perfilusuario.organizacion
+    except (AttributeError, PerfilUsuario.DoesNotExist):
+        mi_organizacion = Organizacion.objects.first()
+    
+    documentos_path = os.path.join(settings.MEDIA_ROOT, 'documentos')
+    categorias = {}
+    
+    if os.path.exists(documentos_path):
+        for carpeta in os.listdir(documentos_path):
+            carpeta_path = os.path.join(documentos_path, carpeta)
+            if os.path.isdir(carpeta_path):
+                archivos = []
+                for archivo in os.listdir(carpeta_path):
+                    archivo_path = os.path.join(carpeta_path, archivo)
+                    if os.path.isfile(archivo_path):
+                        extension = os.path.splitext(archivo)[1][1:].lower()
+                        if not extension:
+                            extension = 'txt'
+                        
+                        # Obtener tamaño del archivo
+                        size_bytes = os.path.getsize(archivo_path)
+                        if size_bytes < 1024:
+                            size_str = f"{size_bytes} B"
+                        elif size_bytes < 1024 * 1024:
+                            size_str = f"{size_bytes / 1024:.1f} KB"
+                        else:
+                            size_str = f"{size_bytes / (1024 * 1024):.1f} MB"
+                        
+                        archivos.append({
+                            'nombre': archivo,
+                            'extension': extension,
+                            'url': f'/media/documentos/{carpeta}/{archivo}',
+                            'tamaño': size_str,
+                        })
+                if archivos:
+                    categorias[carpeta] = archivos
+    
+    iconos = {
+        'ATS': '📋',
+        'Capacitaciones': '🧢',
+        'EPP': '🪖',
+        'matriz de riesgo': '📊',
+        'PTS': '📋',
+        'planes': '📋',
+        'checklist': '✅',
+        'carga de fuego': '🔥',
+        'documentaciones': '📁',
+        'evaluación de cursos': '📝',
+        'informes ambientales': '🌿',
+        'presupuestos': '💰',
+        'protocolos': '📜',
+        'PS': '📋',
+        'RGRL': '📋',
+        'accidentabilidad': '📊',
+    }
+    
+    context = {
+        'organizacion': mi_organizacion,
+        'categorias': dict(sorted(categorias.items(), key=lambda x: x[0].lower())),
+        'iconos': iconos,
+    }
+    return render(request, 'documentacion.html', context)

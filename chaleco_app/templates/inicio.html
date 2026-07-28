@@ -27,30 +27,53 @@
 
 <div class="container">
     <div class="grid-menu">
+        <!-- 1. Nuevo Informe (más usado) -->
         <a href="{% url 'crear_informe' %}" class="menu-card">
             <div class="card-icon-wrapper">
                 <div class="card-icon">📝</div>
             </div>
             <div class="card-title">Nuevo Informe</div>
         </a>
-        <a href="{% url 'historial_informes' %}" class="menu-card">
-            <div class="card-icon-wrapper">
-                <div class="card-icon">🗂️</div>
-            </div>
-            <div class="card-title">Historial de Visitas</div>
-        </a>
-        <a href="{% url 'lista_clientes' %}" class="menu-card">
-            <div class="card-icon-wrapper">
-                <div class="card-icon">🏢</div>
-            </div>
-            <div class="card-title">Mis Clientes</div>
-        </a>
+
+        <!-- 2. Auditorías -->
         <a href="{% url 'lista_auditorias' %}" class="menu-card">
             <div class="card-icon-wrapper">
                 <div class="card-icon">📊</div>
             </div>
             <div class="card-title">Auditorías</div>
         </a>
+
+        <!-- 3. Mis Clientes -->
+        <a href="{% url 'lista_clientes' %}" class="menu-card">
+            <div class="card-icon-wrapper">
+                <div class="card-icon">🏢</div>
+            </div>
+            <div class="card-title">Mis Clientes</div>
+        </a>
+
+        <!-- 4. Historial de Visitas -->
+        <a href="{% url 'historial_informes' %}" class="menu-card">
+            <div class="card-icon-wrapper">
+                <div class="card-icon">🗂️</div>
+            </div>
+            <div class="card-title">Historial de Visitas</div>
+        </a>
+
+        <!-- 5. Dashboard -->
+        <a href="{% url 'dashboard' %}" class="menu-card">
+            <div class="card-icon-wrapper">
+                <div class="card-icon">📈</div>
+            </div>
+            <div class="card-title">Dashboard</div>
+        </a>
+
+        <!-- 6. Documentación -->
+        <a href="{% url 'documentacion' %}" class="menu-card">
+    <div class="card-icon-wrapper">
+        <div class="card-icon">📁</div>
+    </div>
+    <div class="card-title">Documentación</div>
+</a> 
     </div>
 </div>
 

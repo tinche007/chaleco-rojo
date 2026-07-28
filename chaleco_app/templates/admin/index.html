@@ -1,0 +1,55 @@
+{% extends "admin/index.html" %}
+{% load static %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    .btn-inicio {
+        background: #de2a26;
+        color: white !important;
+        padding: 6px 18px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-block;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .btn-inicio:hover {
+        background: #b71c1c;
+        color: white !important;
+        transform: translateY(-1px);
+    }
+    .header-inicio {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #de2a26;
+    }
+    .header-inicio h1 {
+        margin: 0;
+        font-size: 1.3rem;
+        color: #080707;
+    }
+    .header-inicio h1 i {
+        color: #de2a26;
+        margin-right: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="header-inicio">
+    <h1>
+        <i class="fas fa-tachometer-alt"></i> Panel de Administración
+    </h1>
+    <a href="/" class="btn-inicio">
+        ← Volver al Inicio
+    </a>
+</div>
+{{ block.super }}
+{% endblock %}

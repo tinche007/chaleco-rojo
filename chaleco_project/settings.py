@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-tnmsl9vn90dfu467o5x(!ds75wov$r%0*o)yse-9ke1126hg%_
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.8']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.8', 'chaleco-rojo.onrender.com', '*']
 
 
 # 3. REGISTRO DE APLICACIONES
